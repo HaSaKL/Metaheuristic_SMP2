@@ -26,3 +26,9 @@
 *.exe
 *.out
 *.app
+
+# Project Files
+*.project
+
+# The build folder
+/algorithm/build/

@@ -1,5 +1,7 @@
 #To fill
 include_directories(${PARADISEO_INCLUDE_DIR})
-# add_executable(...)
-# target_link_libraries(... ${PARADISEO_LIBRARIES})
+include_directories(${CMAKE_SOURCE_DIR}/src)
 
+set (SMP2_SOURCES
+		SMP2.h
+		)

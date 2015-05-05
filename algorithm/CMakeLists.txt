@@ -5,20 +5,19 @@
 cmake_minimum_required(VERSION 2.8)
 
 # Here define your project name
-project(projectName)
+project(SMP2)
 
 # Here define the name and the version of your package
-SET(PACKAGE_NAME "packageName" CACHE STRING "Package name" FORCE)
-SET(PACKAGE_VERSION "versionNumber" CACHE STRING "Package version" FORCE)
+SET(PACKAGE_NAME "SMP2" CACHE STRING "Package name" FORCE)
+SET(PACKAGE_VERSION "0.1" CACHE STRING "Package version" FORCE)
+
+
+# regular expression checking
+include_regular_expression("^.*$" "^$")
 
 # set a language for the entire project.
 enable_language(CXX)
 enable_language(C)
-
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/module")
-find_package(Paradiseo)
-
-include_directories(${PARADISEO_INCLUDE_DIR})
 
 ######################################################################################
 
@@ -33,6 +32,11 @@ include(CMakeBackwardCompatibilityCXX)
 include(FindDoxygen)
 
 include(CheckLibraryExists)
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/module")
+find_package(Paradiseo COMPONENTS moeo eoutils eo)
+
+include_directories(${PARADISEO_INCLUDE_DIR})
                
 
 ######################################################################################
