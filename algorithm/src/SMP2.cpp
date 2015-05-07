@@ -276,3 +276,99 @@ void SMP2::printSolution() {
 	}
 	std::cout << solution[numTask-1] << std::endl;
 }
+
+
+// Problem-specific fuction
+
+// result of evaluation fuction is equal to the total costs of the current solution
+void SMP2::fullEvaluation() {
+	
+	double totalCosts = 0;
+	double intraModularCosts = 0;
+	double directInterModularCosts = 0; 
+	double indirectInterModularCosts = 0;
+	
+	// calculate module sizes
+	// FIXME: does the creation of the pointer an so forth need 
+	// to be done all the time? If this is also needed in the 
+	// Greedy part, make it accessable or put it into an extra 
+	// privat fuction for code reuse
+	int* moduleSize = new int[numTask];
+	for (int i = 0; i < numTask; i++) {
+		moduleSize[solution[i]] += 1;
+	}
+	
+	// calculate intramodular coordination costs
+	for (int m = 0; m < numModule; m++) {
+		//for each module which contains at least one task
+		if (moduleSize[m] > 0) {  
+			// if it contains at least on task check which size class fits
+			// start with the second largest, if it doesn't fit (moduleSize > intraMaxSize,
+			// assign costs of largest class and stop. 
+			// If it does fit, do nothing and check next size class
+			// this assumes, that the last class is big enough to fit always!
+			for (int i = numIntra-1; i>= 0; i--) {
+				if (moduleSize[m] > intraMaxSize[i]) {
+					intraModularCosts += intraMaxSize[i+1];
+					break; //stop if size fits
+				}
+			}
+		}
+	}
+	
+	
+	
+	// calculate direct inter modular costs and the number of elements
+	// in the ordered upper triangular matrix (numElm[p]) for each path, 
+	// which is needed in the calculation of the indirect intermodular costs
+	// FIXME: See remarks for moduleSize
+	int* numElm = new int[numPath]; //array for counting element number
+	
+	// go through all possible element combinations
+	// FIXME: Could save a small amount of time, if i = j would be skipped -> maybe take a look at iterators?
+	// FIXME: This nested loop looks really ugly and seems to be too large to understand easily
+	for (int i = 0; i < numTask; i++) {
+		for (int j = 0; j < numTask; j++) {
+			// only consider costs if element is in upper triagular matrix, i.e. module for j is greater then module for i
+			if (solution[i] < solution[j]) {
+				// only do the following if there are any costs at all and do for each path
+				if (DSM[i][j] > 0) {
+					for (int p = 0; p < numPath; p++) {
+						// check if it is relevant on that path
+						if (pathDef[p][i] && pathDef[p][j]) {
+							//increase number of elements for that path
+							numElm[p] += 1;
+							
+							// add costs to direct intermodular costs, minding path prob
+							directInterModularCosts += ( DSM[i][j] * pathProb[p] );
+						}
+					}
+				}
+			}	
+		}
+	}
+	
+	
+	// calculate indirect intermodular coordination costs on basis of numElm
+	// uses same procedure as intramodular coordination costs
+	// and repeats it for each possible path and considers paths probabilities
+	for (int p = 0; p < numPath; p++) {
+		// only do if there are any costs to add. CAUTION: this assumes that no elements means no costs!
+		if (numElm[p] > 0) {
+			// check for each size class if it fits and assign costs accordingly
+			for (int i = numInter -1 ; i >= 0; i--) {
+				if (numElm[p] > interMaxSize[i]) {
+					indirectInterModularCosts += interCosts[i+1] * pathProb[p];
+					break; //stopp if class size fits
+				}
+			}
+		}
+	}
+	
+	// add all costs components
+	totalCosts = intraModularCosts + directInterModularCosts + indirectInterModularCosts;
+	
+	// assign solution value
+	fitness(totalCosts);
+}
+

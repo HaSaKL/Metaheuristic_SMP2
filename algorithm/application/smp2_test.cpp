@@ -22,9 +22,6 @@ int main(int argc, char* argv[])
 		// create a problem instance
 		SMP2 p(fileName);
 		
-		
-		
-		
 		/* Test if file could be read .... */
 		// test if matrix could be read
 		// FIXME: Write a test for this...
@@ -60,6 +57,20 @@ int main(int argc, char* argv[])
 
 		// test solution output
 		p.printSolution();
+		
+		
+		// initialize some solution
+		std::cout << "Initialize to some solution" << std::endl;
+		p.solution[0] = 0;
+		p.solution[1] = 1;
+		p.solution[2] = 2;
+		
+		// print new solution
+		p.printSolution();
+		
+		p.fullEvaluation();
+		p.printFitness();
+		
 	}
 	
 	catch(std::exception& e)

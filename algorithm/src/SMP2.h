@@ -30,6 +30,7 @@ public:
     // actual representation of the problems solution using
     // an integer vector representing for each task to what module
     // it is assigned
+	// FIXME: Should/Must this be public or would it be better of private?
     int* solution;
 
     // Constructors
@@ -71,6 +72,7 @@ private:
 	// convinience functions for deleting and copying parameters
 	void DeleteProblemParameters();
 	void CopyProblem(SMP2 & _problem);
+
 
     /* PROBLEM-INSTANCE DEPENDENT PARAMETERS */
     // FIXME: Would container types (Vecotr, Array) make my life easier?
