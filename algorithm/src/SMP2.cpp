@@ -1,6 +1,5 @@
 #include "SMP2.h"
 
-
 /* C O N S T R U C T O R S */
 // Default Constructor
 SMP2::SMP2() {
@@ -201,6 +200,7 @@ double* SMP2::GetPathProb() {
 }
 
 
+
 /* C O N V I N I E N C E  -   F U N C T I O N S */
 // convinience fuctions for constructors and operators
 void SMP2::DeleteProblemParameters() {
@@ -222,14 +222,11 @@ void SMP2::DeleteProblemParameters() {
 		}
 		delete[] DSM;
 	}
-	// path definition
-	if (pathDef != NULL) {
-		for (int p; p < numPath; p++) {
-			delete[] pathDef[p];
-		}
-		delete[] pathDef;
-	}
 	
+	// path definition
+	// FIXME: Is this right? Shouldn't this als delete the matrix, like the DSM above?
+		delete[] pathDef;
+		
 	// delete solution
 	delete[] solution;
 	
@@ -278,8 +275,9 @@ void SMP2::printSolution() {
 }
 
 
-// Problem-specific fuction
+/* P R O B L E M  -  S P E C I F I C    F U N C T I O N S */
 
+// fullProblem Evaluation
 // result of evaluation fuction is equal to the total costs of the current solution
 void SMP2::fullEvaluation() {
 	
@@ -293,7 +291,7 @@ void SMP2::fullEvaluation() {
 	// to be done all the time? If this is also needed in the 
 	// Greedy part, make it accessable or put it into an extra 
 	// privat fuction for code reuse
-	int* moduleSize = new int[numTask];
+	int * moduleSize = new int[numModule]();
 	for (int i = 0; i < numTask; i++) {
 		moduleSize[solution[i]] += 1;
 	}
@@ -307,9 +305,14 @@ void SMP2::fullEvaluation() {
 			// assign costs of largest class and stop. 
 			// If it does fit, do nothing and check next size class
 			// this assumes, that the last class is big enough to fit always!
+			// FIXME: Also: Class could be invalidated instead
 			for (int i = numIntra-1; i>= 0; i--) {
-				if (moduleSize[m] > intraMaxSize[i]) {
-					intraModularCosts += intraMaxSize[i+1];
+				if (moduleSize[m] > intraMaxSize[i-1]) {
+					intraModularCosts += intraCosts[i];
+					
+					//DEBUG
+					//std::cout << "Module " << m << "-->" << moduleSize[m] << " Tasks -->" << intraCosts[i] << std::endl;
+					
 					break; //stop if size fits
 				}
 			}
@@ -322,7 +325,7 @@ void SMP2::fullEvaluation() {
 	// in the ordered upper triangular matrix (numElm[p]) for each path, 
 	// which is needed in the calculation of the indirect intermodular costs
 	// FIXME: See remarks for moduleSize
-	int* numElm = new int[numPath]; //array for counting element number
+	int* numElm = new int[numPath](); //array for counting element number
 	
 	// go through all possible element combinations
 	// FIXME: Could save a small amount of time, if i = j would be skipped -> maybe take a look at iterators?
@@ -356,9 +359,9 @@ void SMP2::fullEvaluation() {
 		// only do if there are any costs to add. CAUTION: this assumes that no elements means no costs!
 		if (numElm[p] > 0) {
 			// check for each size class if it fits and assign costs accordingly
-			for (int i = numInter -1 ; i >= 0; i--) {
-				if (numElm[p] > interMaxSize[i]) {
-					indirectInterModularCosts += interCosts[i+1] * pathProb[p];
+			for (int i = numInter - 1 ; i >= 0; i--) {
+				if (numElm[p] > interMaxSize[i-1]) {
+					indirectInterModularCosts += interCosts[i] * pathProb[p];
 					break; //stopp if class size fits
 				}
 			}
@@ -372,3 +375,10 @@ void SMP2::fullEvaluation() {
 	fitness(totalCosts);
 }
 
+// Random Problem Initialization
+void SMP2::RandomInit() {
+	// Randomly assign each task to a module
+	for (int i = 0; i < numTask; i++) {
+		solution[i] = rng.rand() % (numModule);
+	}
+}

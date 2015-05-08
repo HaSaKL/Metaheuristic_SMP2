@@ -30,13 +30,12 @@ public:
     // actual representation of the problems solution using
     // an integer vector representing for each task to what module
     // it is assigned
-	// FIXME: Should/Must this be public or would it be better of private?
     int* solution;
 
     // Constructors
     SMP2();                      // Default Constructor
     SMP2(SMP2& _problem);        // Copy Constructor
-    SMP2(std::string& _fileName); // with Problem file
+    SMP2(std::string& _fileName);// with Problem file
 
     // Destructor
     ~SMP2();
@@ -67,12 +66,14 @@ public:
     void fullEvaluation();
     void RandomInit();
     void GreedyAdaptiveInit();
+	
+
+	
 
 private:
 	// convinience functions for deleting and copying parameters
 	void DeleteProblemParameters();
 	void CopyProblem(SMP2 & _problem);
-
 
     /* PROBLEM-INSTANCE DEPENDENT PARAMETERS */
     // FIXME: Would container types (Vecotr, Array) make my life easier?
