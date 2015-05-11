@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
 		// create a problem instance
 		SMP2 p(fileName);
 		
-		p.GRASPInit();
+		p.GRASPInit(0.5);
 		
 		/* Test if file could be read .... */
 		// test if matrix could be read
@@ -71,7 +71,7 @@ int main(int argc, char* argv[])
 		
 		// Test evaluation fuction and caclulate a known optimal solution for Test4-10-5.dat
 		// FIXME: Write a test for this...
-		{
+		/*{
 		
 		// initialize some solution
 		std::cout << "Initialize to optimal solution ... Objective Fuction Value should be 69.71 " << std::endl;

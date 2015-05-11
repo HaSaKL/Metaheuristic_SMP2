@@ -69,7 +69,7 @@ public:
     // Problem-specific Fuctions
     void fullEvaluation();
     void RandomInit();
-    void GRASPInit();
+    void GRASPInit(double alpha);
 	
 
 	
@@ -87,6 +87,7 @@ private:
 	// functions and definitions used by the GRASPInit methode
 	typedef std::pair<int, int> Assignment;
 	typedef std::pair<double, Assignment> RCL_element;
+	typedef std::vector<RCL_element>::iterator RCL_iterator;
 	double GRASPCalculateCostIncrease(Assignment & _assign);
 	int* numElm;
 	

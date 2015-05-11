@@ -354,7 +354,7 @@ void SMP2::RandomInit() {
 }
 
 // GRASP Initialization
-void SMP2::GRASPInit() {
+void SMP2::GRASPInit(double alpha) {
 	
 	// FIXME: Maybe it would be easier if all GRASP-realted tasks are put into an extra GRASP class
 	
@@ -399,12 +399,12 @@ void SMP2::GRASPInit() {
 	
 	
 	/*// DEBUG: Print RCL
-	std::cout << "Random Assignment was Task " << cTask << " to Module " << cModule << std::endl;
+	std::cout << "Random Assignment was Task " << cTask << " to Module " << cModule << std::endl << std::endl;
 	for (int i=0; i < RCL.size(); i++) {
 		std::cout << RCL[i].second.first << " -> " << RCL[i].second.second << ": " << RCL[i].first << std::endl;
 	}
 	std::cout << std::endl<<std::endl;
-	*/
+	//*/
 	
 	// order the RCL by its value
 	std::sort(RCL.begin(), RCL.end());
@@ -414,23 +414,62 @@ void SMP2::GRASPInit() {
 		std::cout << RCL[i].second.first << " -> " << RCL[i].second.second << ": " << RCL[i].first << std::endl;
 	}
 	std::cout << std::endl<<std::endl;
-	 * */
+	// */
 	 
 	// select a member of the RCL randomly using the parameter alpha
-	// TODO: Implement me
+	double minCostIncrease = RCL.front().first;
+	double maxCostIncrease = RCL.back().first;
+	
+	/*// debug
+	std::cout << "Min Cost: " << minCostIncrease << std::endl;
+	std::cout << "Max Cost: " << maxCostIncrease << std::endl;
+	// */
+	
+	double maxRCLCost = minCostIncrease + alpha * (maxCostIncrease - minCostIncrease);
+	
+	// go through sorted RCL until you hit the first element that is larger then the cut-off value
+	// NOTE: This could be realized by std::upper_bound, but it needs a custom operator> for this!!! This was the lazy way out
+	int i = 0;
+	while(i < RCL.size()) {
+		if (RCL[i].first < maxCostIncrease) {
+			i++;
+		} else {
+			break;
+		}
+	}
+	
+	// chose an assignment from the range RCL.begin() bis RCL.begin()+i and apply to solution
+	int idxRCL = rng.random(i);
+	cTask = RCL[idxRCL].second.first;
+	cModule = RCL[idxRCL].second.second;
+	solution[cTask] = cModule;
+	
+	// DEBUG
+	//std::cout << "Choosen Assignment was " << cTask << " to Module " << cModule << std::endl << std::endl;
 	
 	// update the numElm for the new assignment
 	// TODO: Implement me
+	// CONTIUE HERE
+	
 	
 	// remove the selected task from the RCL
-	// TODO: Implement me
+	for (int i = 0; i < RCL.size(); i++) {
+		if (RCL[i].second.first == cTask) {
+			RCL.erase(RCL.begin() + i);
+		}
+	}
+	
+	/* // DEBUG: Print RCL again
+	for (int i=0; i < RCL.size(); i++) {
+		std::cout << RCL[i].second.first << " -> " << RCL[i].second.second << ": " << RCL[i].first << std::endl;
+	}
+	std::cout << std::endl<<std::endl;
+	// */
 	
 	// update the RCL
+	// Impement me
 	
 	// Repeat everything until the RCL is empty
-	
-	
-	
 }
 
 
