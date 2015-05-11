@@ -27,9 +27,13 @@ int main(int argc, char* argv[])
 		std::string fileName = "../../problems/Test4-10-5.dat";
 		std::cout << fileName << std::endl << std::endl;
 		
+		// needed, so rng works in other classes ....
+		rng.rand();
+		
 		// create a problem instance
 		SMP2 p(fileName);
 		
+		p.GRASPInit();
 		
 		/* Test if file could be read .... */
 		// test if matrix could be read
@@ -65,13 +69,12 @@ int main(int argc, char* argv[])
 		//*/
 
 		
+		// Test evaluation fuction and caclulate a known optimal solution for Test4-10-5.dat
+		// FIXME: Write a test for this...
 		{
-		// test solution output
-		p.printSolution();
-		std::cout << std::endl << std::endl;
 		
 		// initialize some solution
-		std::cout << "Initialize to optimal solution Objective Fuction Value = 69.71 " << std::endl;
+		std::cout << "Initialize to optimal solution ... Objective Fuction Value should be 69.71 " << std::endl;
 		p.solution[0] = 0; //A
 		p.solution[1] = 1; //B
 		p.solution[2] = 2; //C
@@ -95,9 +98,8 @@ int main(int argc, char* argv[])
 		p.printSolution();
 		p.fullEvaluation();
 		p.printFitness();
-	
-		std::cout << std::endl << rng.rand() << std::endl;
 		}
+		//*/
 		
 		make_help(parser);
 	}

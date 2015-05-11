@@ -122,7 +122,7 @@ SMP2::SMP2(std::string & _fileName) {
 	}
 	
 	// create empty solution
-	solution = new int [numTask];
+	solution = new int [numTask]();
 	
 	file.close();
 }
@@ -298,25 +298,7 @@ void SMP2::fullEvaluation() {
 	
 	// calculate intramodular coordination costs
 	for (int m = 0; m < numModule; m++) {
-		//for each module which contains at least one task
-		if (moduleSize[m] > 0) {  
-			// if it contains at least on task check which size class fits
-			// start with the second largest, if it doesn't fit (moduleSize > intraMaxSize,
-			// assign costs of largest class and stop. 
-			// If it does fit, do nothing and check next size class
-			// this assumes, that the last class is big enough to fit always!
-			// FIXME: Also: Class could be invalidated instead
-			for (int i = numIntra-1; i>= 0; i--) {
-				if (moduleSize[m] > intraMaxSize[i-1]) {
-					intraModularCosts += intraCosts[i];
-					
-					//DEBUG
-					//std::cout << "Module " << m << "-->" << moduleSize[m] << " Tasks -->" << intraCosts[i] << std::endl;
-					
-					break; //stop if size fits
-				}
-			}
-		}
+		intraModularCosts += CalculateIntraModularCosts(moduleSize[m]);
 	}
 	
 	
@@ -353,20 +335,8 @@ void SMP2::fullEvaluation() {
 	
 	
 	// calculate indirect intermodular coordination costs on basis of numElm
-	// uses same procedure as intramodular coordination costs
-	// and repeats it for each possible path and considers paths probabilities
-	for (int p = 0; p < numPath; p++) {
-		// only do if there are any costs to add. CAUTION: this assumes that no elements means no costs!
-		if (numElm[p] > 0) {
-			// check for each size class if it fits and assign costs accordingly
-			for (int i = numInter - 1 ; i >= 0; i--) {
-				if (numElm[p] > interMaxSize[i-1]) {
-					indirectInterModularCosts += interCosts[i] * pathProb[p];
-					break; //stopp if class size fits
-				}
-			}
-		}
-	}
+	indirectInterModularCosts = CalculateIndirectInterModularCosts(numElm);
+	
 	
 	// add all costs components
 	totalCosts = intraModularCosts + directInterModularCosts + indirectInterModularCosts;
@@ -379,6 +349,178 @@ void SMP2::fullEvaluation() {
 void SMP2::RandomInit() {
 	// Randomly assign each task to a module
 	for (int i = 0; i < numTask; i++) {
-		solution[i] = rng.rand() % (numModule);
+		solution[i] = rng.random(numModule);
 	}
+}
+
+// GRASP Initialization
+void SMP2::GRASPInit() {
+	
+	// FIXME: Maybe it would be easier if all GRASP-realted tasks are put into an extra GRASP class
+	
+	// a vector-container holds the RCL
+	// inside the vector are a pair of the cost increase as a double and the pair of the assignment
+	// the types Assignment, and RCL_element are defined in the header
+	// FIXME: Maybe use a list, since lists can be sliced which might be a cheaper operation then the deletion of vector elements
+	std::vector<RCL_element> RCL(numModule * (numTask-1));
+	
+	// set the solution representation to an undefined value for each task, so the algorithm can directly work on the representation
+	// an convient undefined value is -1, since all actual assignments are to module 0 .. numModule-1
+	for (int i = 0; i < numTask; i++) {
+		solution[i] = -1;
+	}
+	
+	// initilize the number of elements on each path which cause indirect intermodular costs
+	numElm = new int[numPath]();
+	
+	
+	// choose one Task randomly and assign it to a random module 
+	// --> This is valid, since for the first assignments all costs are equal 
+	// -> the increase (if any) in intramodular costs for the assignment to the random module
+	// there are no intermodular costs yet, since nothing else was assigned
+	int cTask = rng.random(numTask);
+	int cModule = rng.random(numModule);
+	solution[cTask] = cModule;
+	
+	
+	// now make a RCL of all possible assignments and calculate their increase in total costs and put them into the RCL object
+	double costs;
+	int idx = 0;
+	for (int i = 0; i < numTask; i++) {
+		if (i != cTask) {
+			for (int m = 0; m < numModule; m++) {
+				Assignment cAssign(i,m);
+				costs = GRASPCalculateCostIncrease(cAssign);
+				RCL[idx] = RCL_element(costs, cAssign);
+				idx++;
+			}
+		}
+	}
+	
+	
+	/*// DEBUG: Print RCL
+	std::cout << "Random Assignment was Task " << cTask << " to Module " << cModule << std::endl;
+	for (int i=0; i < RCL.size(); i++) {
+		std::cout << RCL[i].second.first << " -> " << RCL[i].second.second << ": " << RCL[i].first << std::endl;
+	}
+	std::cout << std::endl<<std::endl;
+	*/
+	
+	// order the RCL by its value
+	std::sort(RCL.begin(), RCL.end());
+	
+	/*// DEBUG: Print RCL again
+	for (int i=0; i < RCL.size(); i++) {
+		std::cout << RCL[i].second.first << " -> " << RCL[i].second.second << ": " << RCL[i].first << std::endl;
+	}
+	std::cout << std::endl<<std::endl;
+	 * */
+	 
+	// select a member of the RCL randomly using the parameter alpha
+	// TODO: Implement me
+	
+	// update the numElm for the new assignment
+	// TODO: Implement me
+	
+	// remove the selected task from the RCL
+	// TODO: Implement me
+	
+	// update the RCL
+	
+	// Repeat everything until the RCL is empty
+	
+	
+	
+}
+
+
+// C o n V i n i e n c e - F u n c t i o n s for problem-specific calculation
+double SMP2::GRASPCalculateCostIncrease(Assignment & _assign) {
+	// Calculates the increase in total costs of the Assignment of
+	double intraModularIncrease = 0.0;
+	double directInterModularIncrease = 0.0;
+	double indirectInterModularIncrease = 0.0;
+	
+	// Calculate increase in intramodular costs, this is the additional costs after the assignment
+	int moduleSize = 0;
+	for (int i = 0; i < numTask; i++) {
+		if (solution[i] == _assign.second) {
+			moduleSize += 0;
+		}
+	}
+	intraModularIncrease = CalculateIntraModularCosts(moduleSize+1) - CalculateIntraModularCosts(moduleSize);
+	
+	
+	// Calculate the increase in intermodular costs; check for each element which as already been assigned
+	// to another module. Mind that an element which as not beed assigned at all is marked with a value of -1
+	
+	// FIXME: Replace numElm and numElmNew with a std::vector
+	// copy numElm
+	int *numElmNew = new int[numPath]();
+	for(int p = 0; p < numPath; p++) {
+		numElmNew[p] = numElm[p];
+	}
+	
+	for (int i = 0; i < numTask; i++) {
+		// only add iff the task has beed assigend to any module other then the current module and when the correspondig DSM has a value greater than
+		if (solution[i] >= 0 && 
+			solution[i] != _assign.second && 
+			DSM[solution[i]][_assign.first] > 0) 
+		{
+			for (int p = 0; p < numPath; p++) {
+				if (pathDef[p][i] && pathDef[p][_assign.first]) {
+					numElm[p]++;
+					directInterModularIncrease += DSM[i][_assign.first] * pathProb[p]; //FIXME: stimmt die Reihenfolge im DSM[i][j] aufruf?
+				}
+			}
+		}
+	}
+	
+	// Calculate the increase in indiect intermodular costs, this is the additional costs after the assignment
+	indirectInterModularIncrease = CalculateIndirectInterModularCosts(numElmNew) - CalculateIndirectInterModularCosts(numElm);
+	
+	double totalIncrease = intraModularIncrease + directInterModularIncrease + indirectInterModularIncrease;
+	
+	return totalIncrease;
+}
+
+double SMP2::CalculateIntraModularCosts(int moduleSize) {
+	// Calculates the IntraModular Costs of a given number of Elements
+	// FIXME: This uses a lot of loops. This could probabliy be improved my using a lookup-table for different module sizes (up to the maximum number of tasks)
+	
+	//for each module which contains at least one task
+	if (moduleSize > 0) {  
+		// if it contains at least on task check which size class fits
+		// start with the second largest, if it doesn't fit (moduleSize > intraMaxSize,
+		// assign costs of largest class and stop. 
+		// If it does fit, do nothing and check next size class
+		// this assumes, that the last class is big enough to fit always!
+		// FIXME: Also: Class could be invalidated instead
+		for (int i = numIntra-1; i>= 0; i--) {
+		if (moduleSize > intraMaxSize[i-1]) {
+				// stop if size fits and return costs for size
+				return intraCosts[i];
+			}
+		}
+	}
+}
+
+double SMP2::CalculateIndirectInterModularCosts(int numElm[]) {
+	// calculate indirect intermodular coordination costs on basis of numElm
+	// uses same procedure as intramodular coordination costs
+	// and repeats it for each possible path and considers paths probabilities
+	double indirectInterModularCosts = 0;
+	for (int p = 0; p < numPath; p++) {
+		// only do if there are any costs to add. CAUTION: this assumes that no elements means no costs!
+		if (numElm[p] > 0) {
+			// check for each size class if it fits and assign costs accordingly
+			for (int i = numInter - 1 ; i >= 0; i--) {
+				if (numElm[p] > interMaxSize[i-1]) {
+					indirectInterModularCosts += interCosts[i] * pathProb[p];
+					break; //stopp if class size fits
+				}
+			}
+		}
+	}
+	return indirectInterModularCosts;
 }

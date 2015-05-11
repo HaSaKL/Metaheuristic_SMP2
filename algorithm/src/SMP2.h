@@ -23,6 +23,10 @@
 
 // needed for base classes and random numbers
 #include <eo>
+#include <set>
+#include <utility> 	// for std::pair-container used in GRASP
+#include <vector>	// for the std::vector-container used in GRASP
+#include <algorithm>// for std::alogirhms like sort, for_each in GRASP
 
 class SMP2 : public EO<eoMinimizingFitness>
 {
@@ -65,7 +69,7 @@ public:
     // Problem-specific Fuctions
     void fullEvaluation();
     void RandomInit();
-    void GreedyAdaptiveInit();
+    void GRASPInit();
 	
 
 	
@@ -75,6 +79,18 @@ private:
 	void DeleteProblemParameters();
 	void CopyProblem(SMP2 & _problem);
 
+
+	// convinience fuctions for calculating costs and costs increases
+	double CalculateIntraModularCosts(int moduleSize);
+	double CalculateIndirectInterModularCosts(int numElm[]);
+
+	// functions and definitions used by the GRASPInit methode
+	typedef std::pair<int, int> Assignment;
+	typedef std::pair<double, Assignment> RCL_element;
+	double GRASPCalculateCostIncrease(Assignment & _assign);
+	int* numElm;
+	
+	
     /* PROBLEM-INSTANCE DEPENDENT PARAMETERS */
     // FIXME: Would container types (Vecotr, Array) make my life easier?
 
@@ -113,12 +129,14 @@ private:
     // Intermodular costs classes, defined by max size and costs
     // each defined as one-dimensional array of size numInter
     // [numInter x 1]
+	// CHECKME: Could this be realized with a map or a multimap
     double* interCosts;
     int* interMaxSize;
 
     // Intramodular costs classes, defined by max size and costs
     // each defined as one-dimensional array of size numInter
     // [numInter x 1]
+	// CHECKME: Could this be realized with a map or a multimap
     double* intraCosts;
     int* intraMaxSize;
 };
