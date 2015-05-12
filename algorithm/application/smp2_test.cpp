@@ -33,7 +33,43 @@ int main(int argc, char* argv[])
 		// create a problem instance
 		SMP2 p(fileName);
 		
-		p.GRASPInit(0.5);
+		//p.GRASPInit(1.1);
+		
+		// Make some experiments with Greedy-Initilaization and compare them to RandomInitialization
+		int trys = 10000;
+		double alpha = 1;
+		double ResRandom = 0;
+		double ResGreedy = 0;
+		
+		for (alpha = 0.0; alpha < 1; alpha = alpha + 0.05) {
+			ResGreedy = 0;
+			for (int i = 0; i < trys; i++) {
+				p.GRASPInit(alpha);
+				p.fullEvaluation();
+				ResGreedy += p.fitness();
+			}
+			std::cout << "Average Greedy Result: " << ResGreedy / trys << " (alpha = " << alpha << ")" << std::endl;
+		}
+		
+		// do it for a manual alpha = 1, since the adding up (above) does not work to good on doubles and does not consider the entire RCL
+		// this value for alpha = 1 is compared with the random construction to validate the implementation
+		// for alpha = 1 the Greedy-Construction should behave like a purely random assignment
+		ResGreedy = 0;
+		alpha = 1;
+		for (int i = 0; i < trys; i++) {
+			p.GRASPInit(alpha);
+			p.fullEvaluation();
+			ResGreedy += p.fitness();
+		}
+		std::cout << "Average Greedy Result: " << ResGreedy / trys << " (alpha = " << alpha << ")" << std::endl;
+		
+		for (int i = 0; i < trys; i++) {
+			p.RandomInit();
+			p.fullEvaluation();
+			ResRandom += p.fitness();
+		}	
+		std::cout << "Average Random Result: " << ResRandom / trys << std::endl;
+		// */
 		
 		/* Test if file could be read .... */
 		// test if matrix could be read

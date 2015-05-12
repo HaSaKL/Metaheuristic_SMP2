@@ -343,6 +343,9 @@ void SMP2::fullEvaluation() {
 	
 	// assign solution value
 	fitness(totalCosts);
+	
+	delete[] numElm;
+	delete[] moduleSize;
 }
 
 // Random Problem Initialization
@@ -364,6 +367,8 @@ void SMP2::GRASPInit(double alpha) {
 	// FIXME: Maybe use a list, since lists can be sliced which might be a cheaper operation then the deletion of vector elements
 	std::vector<RCL_element> RCL(numModule * (numTask-1));
 	
+	Assignment cAssign;
+	
 	// set the solution representation to an undefined value for each task, so the algorithm can directly work on the representation
 	// an convient undefined value is -1, since all actual assignments are to module 0 .. numModule-1
 	for (int i = 0; i < numTask; i++) {
@@ -373,103 +378,20 @@ void SMP2::GRASPInit(double alpha) {
 	// initilize the number of elements on each path which cause indirect intermodular costs
 	numElm = new int[numPath]();
 	
+	// Initialize the RCL by making one random assignment and then calculate cost increase for all other possible assignments
+	GRASPInitRCL(RCL);
 	
-	// choose one Task randomly and assign it to a random module 
-	// --> This is valid, since for the first assignments all costs are equal 
-	// -> the increase (if any) in intramodular costs for the assignment to the random module
-	// there are no intermodular costs yet, since nothing else was assigned
-	int cTask = rng.random(numTask);
-	int cModule = rng.random(numModule);
-	solution[cTask] = cModule;
-	
-	
-	// now make a RCL of all possible assignments and calculate their increase in total costs and put them into the RCL object
-	double costs;
-	int idx = 0;
-	for (int i = 0; i < numTask; i++) {
-		if (i != cTask) {
-			for (int m = 0; m < numModule; m++) {
-				Assignment cAssign(i,m);
-				costs = GRASPCalculateCostIncrease(cAssign);
-				RCL[idx] = RCL_element(costs, cAssign);
-				idx++;
-			}
-		}
+	// until all Tasks are assigned to a module repeat
+	while (RCL.size() > 0) {
+		// Choose one of the possible assignments from the RCL
+		// and add it to the solution
+		GRASPAddAssignment(RCL, alpha);
+		
+		// Recalculate the Cost Differences of the Assignments
+		GRASPUpdateRCL(RCL);
 	}
-	
-	
-	/*// DEBUG: Print RCL
-	std::cout << "Random Assignment was Task " << cTask << " to Module " << cModule << std::endl << std::endl;
-	for (int i=0; i < RCL.size(); i++) {
-		std::cout << RCL[i].second.first << " -> " << RCL[i].second.second << ": " << RCL[i].first << std::endl;
-	}
-	std::cout << std::endl<<std::endl;
-	//*/
-	
-	// order the RCL by its value
-	std::sort(RCL.begin(), RCL.end());
-	
-	/*// DEBUG: Print RCL again
-	for (int i=0; i < RCL.size(); i++) {
-		std::cout << RCL[i].second.first << " -> " << RCL[i].second.second << ": " << RCL[i].first << std::endl;
-	}
-	std::cout << std::endl<<std::endl;
-	// */
-	 
-	// select a member of the RCL randomly using the parameter alpha
-	double minCostIncrease = RCL.front().first;
-	double maxCostIncrease = RCL.back().first;
-	
-	/*// debug
-	std::cout << "Min Cost: " << minCostIncrease << std::endl;
-	std::cout << "Max Cost: " << maxCostIncrease << std::endl;
-	// */
-	
-	double maxRCLCost = minCostIncrease + alpha * (maxCostIncrease - minCostIncrease);
-	
-	// go through sorted RCL until you hit the first element that is larger then the cut-off value
-	// NOTE: This could be realized by std::upper_bound, but it needs a custom operator> for this!!! This was the lazy way out
-	int i = 0;
-	while(i < RCL.size()) {
-		if (RCL[i].first < maxCostIncrease) {
-			i++;
-		} else {
-			break;
-		}
-	}
-	
-	// chose an assignment from the range RCL.begin() bis RCL.begin()+i and apply to solution
-	int idxRCL = rng.random(i);
-	cTask = RCL[idxRCL].second.first;
-	cModule = RCL[idxRCL].second.second;
-	solution[cTask] = cModule;
-	
-	// DEBUG
-	//std::cout << "Choosen Assignment was " << cTask << " to Module " << cModule << std::endl << std::endl;
-	
-	// update the numElm for the new assignment
-	// TODO: Implement me
-	// CONTIUE HERE
-	
-	
-	// remove the selected task from the RCL
-	for (int i = 0; i < RCL.size(); i++) {
-		if (RCL[i].second.first == cTask) {
-			RCL.erase(RCL.begin() + i);
-		}
-	}
-	
-	/* // DEBUG: Print RCL again
-	for (int i=0; i < RCL.size(); i++) {
-		std::cout << RCL[i].second.first << " -> " << RCL[i].second.second << ": " << RCL[i].first << std::endl;
-	}
-	std::cout << std::endl<<std::endl;
-	// */
-	
-	// update the RCL
-	// Impement me
-	
-	// Repeat everything until the RCL is empty
+		
+	delete numElm;
 }
 
 
@@ -479,14 +401,17 @@ double SMP2::GRASPCalculateCostIncrease(Assignment & _assign) {
 	double intraModularIncrease = 0.0;
 	double directInterModularIncrease = 0.0;
 	double indirectInterModularIncrease = 0.0;
+	double totalIncrease = 0.0;
 	
 	// Calculate increase in intramodular costs, this is the additional costs after the assignment
+	// first, count number of tasks in module which should be assigned to
 	int moduleSize = 0;
 	for (int i = 0; i < numTask; i++) {
 		if (solution[i] == _assign.second) {
-			moduleSize += 0;
+			moduleSize += 1;
 		}
 	}
+	// second, calculate cost difference if task would be assigned (moduleSize+1) and if it wouldn't (moduleSize stays the same)
 	intraModularIncrease = CalculateIntraModularCosts(moduleSize+1) - CalculateIntraModularCosts(moduleSize);
 	
 	
@@ -501,14 +426,11 @@ double SMP2::GRASPCalculateCostIncrease(Assignment & _assign) {
 	}
 	
 	for (int i = 0; i < numTask; i++) {
-		// only add iff the task has beed assigend to any module other then the current module and when the correspondig DSM has a value greater than
-		if (solution[i] >= 0 && 
-			solution[i] != _assign.second && 
-			DSM[solution[i]][_assign.first] > 0) 
-		{
+		// only add iff the task has beed assigend to any module other then the current module and when the correspondig DSM has a value greater than zero
+		if (solution[i] >= 0 && solution[i] != _assign.second && DSM[solution[i]][_assign.first] > 0) {
 			for (int p = 0; p < numPath; p++) {
 				if (pathDef[p][i] && pathDef[p][_assign.first]) {
-					numElm[p]++;
+					numElmNew[p]++;
 					directInterModularIncrease += DSM[i][_assign.first] * pathProb[p]; //FIXME: stimmt die Reihenfolge im DSM[i][j] aufruf?
 				}
 			}
@@ -518,9 +440,26 @@ double SMP2::GRASPCalculateCostIncrease(Assignment & _assign) {
 	// Calculate the increase in indiect intermodular costs, this is the additional costs after the assignment
 	indirectInterModularIncrease = CalculateIndirectInterModularCosts(numElmNew) - CalculateIndirectInterModularCosts(numElm);
 	
-	double totalIncrease = intraModularIncrease + directInterModularIncrease + indirectInterModularIncrease;
+	totalIncrease = intraModularIncrease + directInterModularIncrease + indirectInterModularIncrease;
+	
+	delete[] numElmNew;
 	
 	return totalIncrease;
+}
+
+void SMP2::GRASPUpdateNumElm(int _task, int _module) {
+	// calculates the new number of tasks between modules on each path
+	// this is reduandant to what is done in GaCalculateIndirectInterModularCosts, but do we really want to save all the results we got there?
+	// FIXME: Put some thought into making this and the relationship to CalculateIndirectInterModularCosts a littel easiert
+	for (int i = 0; i < numTask; i++) {
+		if (solution[i] >= 0 && i != _task && solution[i] != _module && DSM[solution[i]][_task] > 0) {
+			for (int p = 0; p < numPath; p++) {
+				if(pathDef[p][i] && pathDef[p][_task]) {
+					numElm[p]++;
+				}
+			}
+		}
+	}
 }
 
 double SMP2::CalculateIntraModularCosts(int moduleSize) {
@@ -562,4 +501,137 @@ double SMP2::CalculateIndirectInterModularCosts(int numElm[]) {
 		}
 	}
 	return indirectInterModularCosts;
+}
+
+void SMP2::GRASPInitRCL(std::vector<RCL_element> & _rcl) {
+	// Initialize the Candidate list
+	// first do one completely random assignment
+	// second construct Candidate List with incremental costs
+
+	// choose one Task randomly and assign it to a random module 
+	// --> This is valid, since for the first assignments all costs are equal 
+	// --> the increase (if any) in intramodular costs for the assignment to the random module
+	// there are no intermodular costs yet, since nothing else was assigned
+	int cTask = rng.random(numTask);
+	int cModule = rng.random(numModule);
+	solution[cTask] = cModule;
+	
+	// now make a RCL of all possible assignments and calculate their increase in total costs and put them into the RCL object
+	double costs;
+	int idx = 0;
+	Assignment cAssign;
+	for (int i = 0; i < numTask; i++) {
+		if (i != cTask) {
+			for (int m = 0; m < numModule; m++) {
+				cAssign.first = i;
+				cAssign.second = m;
+				costs = GRASPCalculateCostIncrease(cAssign);
+				_rcl[idx] = RCL_element(costs, cAssign);
+				idx++;
+			}
+		}
+	}
+	
+	/*// DEBUG: Print RCL
+	std::cout << "Random Assignment was Task " << cTask << " to Module " << cModule << std::endl << std::endl;
+	for (int i=0; i < _rcl.size(); i++) {
+		std::cout << _rcl[i].second.first << " -> " << _rcl[i].second.second << ": " << _rcl[i].first << std::endl;
+	}
+	std::cout << std::endl<<std::endl;
+	//*/
+}
+
+void SMP2::GRASPAddAssignment(std::vector<RCL_element> & _rcl, double alpha) {
+	// randomly adds an additional assignment to the solution and removes
+	// the other possible assignments using its task from the RCL
+	
+	// order the by its cost valuse
+	std::sort(_rcl.begin(), _rcl.end());
+	
+	/*// DEBUG: Print RCL again
+	std::cout << "Ordered RCL: " << std::endl;
+	for (int i=0; i < _rcl.size(); i++) {
+		std::cout << _rcl[i].second.first << " -> " << _rcl[i].second.second << ": " << _rcl[i].first << std::endl;
+	}
+	std::cout << std::endl;
+	// */
+	 
+	// select a member of the RCL randomly using the parameter alpha
+	// first calculate the cut-off value for the Restricted List (starts at zero and goes up to i)
+	double minCostIncrease = _rcl.front().first;
+	double maxCostIncrease = _rcl.back().first;
+	double maxRCLCost = minCostIncrease + alpha * (maxCostIncrease - minCostIncrease);
+	
+	// then go through sorted RCL until you hit the first element that is larger then the cut-off value --> Restricted List
+	// FIXME: This could be realized by std::upper_bound, but it needs a custom operator> for this!!! This was the lazy way out
+	int i = 0;
+	while (i < _rcl.size()){
+		if (_rcl[i].first >+ maxRCLCost) {
+			break;
+		} else {
+			i++;
+		}
+	}
+	
+	/*// DEBUG
+	std::cout << "Min Cost: " << minCostIncrease << std::endl;
+	std::cout << "Max Cost: " << maxCostIncrease << std::endl;
+	std::cout << "Cut-off Cost: " << maxRCLCost << " This includes " << i << " of "<<  _rcl.size() << " Elements" << std::endl;
+	std::cout << "Cut-off at RCL-Element :" << i << std::endl;
+	std::cout << "---------------------------------------------------------------------------------" << std::endl;
+	// */
+	
+	
+	// chose an assignment from the restricted list (RCL.begin() to RCL.begin()+i)
+	int idxRCL = rng.random(i); // only draw from [0,i), b/c i's maximum is _rcl.size() which is already one above the last container in the vector
+	int cTask = _rcl[idxRCL].second.first;
+	int cModule = _rcl[idxRCL].second.second;
+	
+	
+	// add the assignment to the solution
+	solution[cTask] = cModule;
+	
+	
+	// remove the selected task from the RCL
+	i = 0;
+	while (i < _rcl.size()) {
+		if (_rcl[i].second.first == cTask) {
+			_rcl.erase(_rcl.begin() + i);
+		} else {
+			i++;
+		}
+	}
+	
+		
+	// update the numElm for the new assignment
+	GRASPUpdateNumElm(cTask, cModule);
+	
+	/*// DEBUG: Print RCL again
+	std::cout << "New RCL looks like this: " << std::endl;
+	for (int i=0; i < _rcl.size(); i++) {
+		std::cout << _rcl[i].second.first << " -> " << _rcl[i].second.second << ": " << _rcl[i].first << std::endl;
+	}
+	std::cout << std::endl<<std::endl;
+	// */
+	
+}
+
+void SMP2::GRASPUpdateRCL(std::vector<RCL_element> & _rcl) {
+	// now update the RCL of all possible assignments and calculate their increase in total costs and put them into the RCL object
+	double costs;
+	Assignment cAssign;
+	for (int i = 0; i < _rcl.size(); i++) {
+		cAssign.first = _rcl[i].second.first;
+		cAssign.second = _rcl[i].second.second;
+		costs = GRASPCalculateCostIncrease(cAssign);
+		_rcl[i].first = costs;
+	}
+	
+	// DEBUG: Print RCL again
+	/*std::cout << "New RCL after update: " << std::endl;
+	for (int i=0; i < _rcl.size(); i++) {
+		std::cout << _rcl[i].second.first << " -> " << _rcl[i].second.second << ": " << _rcl[i].first << std::endl;
+	}
+	std::cout << std::endl<<std::endl;
+	// */
 }

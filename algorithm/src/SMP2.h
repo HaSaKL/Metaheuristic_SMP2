@@ -87,8 +87,12 @@ private:
 	// functions and definitions used by the GRASPInit methode
 	typedef std::pair<int, int> Assignment;
 	typedef std::pair<double, Assignment> RCL_element;
-	typedef std::vector<RCL_element>::iterator RCL_iterator;
+	//typedef std::vector<RCL_element>::iterator RCL_iterator;
 	double GRASPCalculateCostIncrease(Assignment & _assign);
+	void GRASPUpdateNumElm(int _task, int _module);
+	void GRASPInitRCL(std::vector<RCL_element> & _rcl);
+	void GRASPAddAssignment(std::vector<RCL_element> & _rcl, double alpha);
+	void GRASPUpdateRCL(std::vector<RCL_element> & _rcl);
 	int* numElm;
 	
 	
