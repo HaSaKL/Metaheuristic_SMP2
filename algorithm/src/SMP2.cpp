@@ -361,41 +361,47 @@ void SMP2::GRASPInit(double alpha) {
 	
 	// FIXME: Maybe it would be easier if all GRASP-realted tasks are put into an extra GRASP class
 	
-	// a vector-container holds the RCL
+	// a vector-container holds the candidate List
 	// inside the vector are a pair of the cost increase as a double and the pair of the assignment
 	// the types Assignment, and RCL_element are defined in the header
-	// FIXME: Maybe use a list, since lists can be sliced which might be a cheaper operation then the deletion of vector elements
-	std::vector<RCL_element> RCL(numModule * (numTask-1));
+	// FIXME: When using an extra class, this needs to go into the constructor
+	std::vector<RCL_element> candidateList(numModule * (numTask-1));
 	
 	Assignment cAssign;
 	
 	// set the solution representation to an undefined value for each task, so the algorithm can directly work on the representation
 	// an convient undefined value is -1, since all actual assignments are to module 0 .. numModule-1
+	// FIXME: Also into the Constructor
 	for (int i = 0; i < numTask; i++) {
 		solution[i] = -1;
 	}
 	
 	// initilize the number of elements on each path which cause indirect intermodular costs
+	// FIXME: Also into the construcot
 	numElm = new int[numPath]();
 	
 	// Initialize the RCL by making one random assignment and then calculate cost increase for all other possible assignments
-	GRASPInitRCL(RCL);
+	GRASPInitCandidateList(candidateList);
 	
 	// until all Tasks are assigned to a module repeat
-	while (RCL.size() > 0) {
+	while (candidateList.size() > 0) {
 		// Choose one of the possible assignments from the RCL
 		// and add it to the solution
-		GRASPAddAssignment(RCL, alpha);
+		GRASPAddAssignment(candidateList, alpha);
 		
 		// Recalculate the Cost Differences of the Assignments
-		GRASPUpdateRCL(RCL);
+		GRASPUpdateCandidateList(candidateList);
 	}
-		
+	
+	// clean up after using Grasp
+	// FIXME: When using extra class this need to go into the destuctor
 	delete numElm;
 }
 
 
-// C o n V i n i e n c e - F u n c t i o n s for problem-specific calculation
+
+// G R A S P - I M P L E M E N T A T I O N
+// FIXME: These Fuction need to be methods in an additional class
 double SMP2::GRASPCalculateCostIncrease(Assignment & _assign) {
 	// Calculates the increase in total costs of the Assignment of
 	double intraModularIncrease = 0.0;
@@ -503,7 +509,7 @@ double SMP2::CalculateIndirectInterModularCosts(int numElm[]) {
 	return indirectInterModularCosts;
 }
 
-void SMP2::GRASPInitRCL(std::vector<RCL_element> & _rcl) {
+void SMP2::GRASPInitCandidateList(std::vector<RCL_element> & _rcl) {
 	// Initialize the Candidate list
 	// first do one completely random assignment
 	// second construct Candidate List with incremental costs
@@ -616,7 +622,7 @@ void SMP2::GRASPAddAssignment(std::vector<RCL_element> & _rcl, double alpha) {
 	
 }
 
-void SMP2::GRASPUpdateRCL(std::vector<RCL_element> & _rcl) {
+void SMP2::GRASPUpdateCandidateList(std::vector<RCL_element> & _rcl) {
 	// now update the RCL of all possible assignments and calculate their increase in total costs and put them into the RCL object
 	double costs;
 	Assignment cAssign;
@@ -626,12 +632,4 @@ void SMP2::GRASPUpdateRCL(std::vector<RCL_element> & _rcl) {
 		costs = GRASPCalculateCostIncrease(cAssign);
 		_rcl[i].first = costs;
 	}
-	
-	// DEBUG: Print RCL again
-	/*std::cout << "New RCL after update: " << std::endl;
-	for (int i=0; i < _rcl.size(); i++) {
-		std::cout << _rcl[i].second.first << " -> " << _rcl[i].second.second << ": " << _rcl[i].first << std::endl;
-	}
-	std::cout << std::endl<<std::endl;
-	// */
 }
