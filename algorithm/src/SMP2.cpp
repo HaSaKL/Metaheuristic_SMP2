@@ -173,6 +173,10 @@ int** SMP2::GetDSM() {
 	return DSM;
 }
 
+int SMP2::GetCurrentModuleSize(int m) {
+	return currentModuleSize[m];
+}
+
 double* SMP2::GetInterCosts() {
 	return interCosts;
 }
@@ -187,6 +191,10 @@ double* SMP2::GetIntraCosts() {
 
 int* SMP2::GetIntraMaxSize() {
 	return intraMaxSize;
+}
+
+int* SMP2::GetCurrentNumElm() {
+	return currentNumElm;
 }
 
 int SMP2::GetNumInter() {
@@ -322,7 +330,7 @@ void SMP2::fullEvaluation() {
 	intraModularCosts = CalculateTotalIntraModularCosts();	
 	
 	// calcualte direct intermodular coordination costs, this also updates the currentNumElm
-	directInterModularCosts = CalcualteDirectInterModularCosts();
+	directInterModularCosts = CalculateDirectInterModularCosts();
 
 	// calculate indirect intermodular coordination costs on basis of the currentNumElm
 	indirectInterModularCosts = CalculateIndirectInterModularCosts();
@@ -342,7 +350,7 @@ void SMP2::fullEvaluation() {
 	fitness(totalCosts);
 }
 
-double SMP2::CalculateSingleIntraModularCosts(int moduleSize) {
+double SMP2::CalculateIntraModularCosts(int moduleSize) {
 	// Calculates the IntraModular Costs of a given number of Elements
 	// FIXME: This uses a lot of loops. This could probabliy be improved my using a lookup-table for different module sizes (up to the maximum number of tasks)
 	
@@ -366,7 +374,7 @@ double SMP2::CalculateSingleIntraModularCosts(int moduleSize) {
 double SMP2::CalculateTotalIntraModularCosts() {
 	double intraModularCosts = 0;
 	for (int m = 0; m < numModule; m++) {
-		intraModularCosts += CalculateSingleIntraModularCosts(currentModuleSize[m]);
+		intraModularCosts += CalculateIntraModularCosts(currentModuleSize[m]);
 	}
 	return intraModularCosts;
 }
@@ -395,7 +403,7 @@ double SMP2::CalculateIndirectInterModularCosts(int numElm[]) {
 	return indirectInterModularCosts;
 }
 
-double SMP2::CalcualteDirectInterModularCosts() {
+double SMP2::CalculateDirectInterModularCosts() {
 	// Caclulates the direct inter modualr costs and also the number of elements between modules, considering the module hierarchy
 	double directInterModularCosts = 0;
 	
@@ -405,8 +413,10 @@ double SMP2::CalcualteDirectInterModularCosts() {
 	
 	// go through all possible element combinations i.o.t. calculate the direct intermodular costs
 	// also calculates and updates the number of elements for a given assignment
+	// FIXME: Use CalcualteDirectInterModualrCosts(int i, int m, int numElm[] call to simplify
 	for (int i = 0; i < numTask; i++) {
-		for (int j = 0; j < numTask; j++) {
+		directInterModularCosts += CalculateDirectInterModularCosts(i, solution[i], currentNumElm);
+		/*for (int j = 0; j < numTask; j++) {
 			// only consider costs if element is in upper triagular matrix, i.e. module for j is greater then module for i
 			if (solution[i] < solution[j]) {
 				// only do the following if there are any costs at all and do for each path
@@ -423,13 +433,31 @@ double SMP2::CalcualteDirectInterModularCosts() {
 					}
 				}
 			}	
-		}
+		}*/
 	}
 	
 	return directInterModularCosts;
 }
 
-
+double SMP2::CalculateDirectInterModularCosts(int i, int m, int numElm[]) {
+	double DirectInterCosts = 0;
+	
+	for (int j = 0; j < numTask; j++) {
+		// only consider costs if element is in upper triangular matrix, i.e. module for j is greater then module for i 
+		// and if there are any costs at all
+		if(i != j && DSM[i][j] > 0 && m < solution[j]) {
+			for (int p = 0; p < numPath; p++) {
+				// check if it is relevant on that path
+				if (pathDef[p][i] && pathDef[p][j]) {
+					DirectInterCosts += ( DSM[i][j] * pathProb[p] );
+					numElm[p] += 1;
+				}
+			}
+		}
+	}
+	
+	return DirectInterCosts;
+}
 
 
 // Random Problem Initialization
@@ -497,7 +525,7 @@ double SMP2::GRASPCalculateCostIncrease(Assignment & _assign) {
 		}
 	}
 	// second, calculate cost difference if task would be assigned (moduleSize+1) and if it wouldn't (moduleSize stays the same)
-	intraModularIncrease = CalculateSingleIntraModularCosts(moduleSize+1) - CalculateSingleIntraModularCosts(moduleSize);
+	intraModularIncrease = CalculateIntraModularCosts(moduleSize+1) - CalculateIntraModularCosts(moduleSize);
 	
 	
 	// Calculate the increase in intermodular costs; check for each element which as already been assigned

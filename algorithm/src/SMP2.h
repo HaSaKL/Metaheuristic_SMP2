@@ -49,6 +49,8 @@ public:
 	int GetNumModule();
 	int GetNumPath();
 	int GetNumTask();
+	int GetCurrentModuleSize(int m);
+	int* GetCurrentNumElm();
 	bool** GetPathDef();
 	double* GetPathProb();
 	
@@ -58,7 +60,9 @@ public:
 
 	// Problem-specific Fuctions
 	void fullEvaluation();
-	double CalculateSingleIntraModularCosts(int moduleSize);
+	double CalculateIntraModularCosts(int moduleSize);
+	double CalculateDirectInterModularCosts(int i, int m, int numElm[]); //costs for on single task i in module m depending on given assignment of all other tasks
+	double CalculateIndirectInterModularCosts(int numElm[]);
 	void RandomInit();
 	void GRASPInit(double alpha);
 	
@@ -72,10 +76,9 @@ private:
 
 
 	// convinience fuctions for calculating costs and costs increases
-	double CalcualteDirectInterModularCosts();
+	double CalculateDirectInterModularCosts();	//total direct inter modular costs
 	double CalculateTotalIntraModularCosts();
 	double CalculateIndirectInterModularCosts();
-	double CalculateIndirectInterModularCosts(int numElm[]);
 
 	// FIXME: These could go into SMP2_GreedyInit.h
 	// functions and definitions used by the GRASPInit methode
