@@ -66,4 +66,5 @@ void SMP2_AdjElementFlip_Neighborhood::next(SMP2& _solution, SMP2_Flip_Neighbor&
 		// toggle up down for next move; current is now up
 		current_up = true;
 	}
+	_current.setMove(ElementToModule.first,ElementToModule.second);
 }
