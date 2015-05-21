@@ -1,25 +1,29 @@
 #include "SMP2_ElementFlip_Neighbor.h"
 
-void SMP2_Flip_Neighbor::setMove(unsigned int _element, unsigned int _newModule) {
+void SMP2_Flip_Neighbor::setMove(int _element, int _newModule) {
 	ElementToModule.first = _element;
 	ElementToModule.second = _newModule;
 }
 
 
-void SMP2_Flip_Neighbor::getMove(unsigned int& _element, unsigned int& _newModuel) {
+void SMP2_Flip_Neighbor::getMove(int& _element, int& _newModule) {
 	_element = ElementToModule.first;
-	_newModuel = ElementToModule.second;
+	_newModule = ElementToModule.second;
 }
 
 
 void SMP2_Flip_Neighbor::move(SMP2& _solution) {
 	_solution[ElementToModule.first] = ElementToModule.second;
+	// FIXME: OR your could add the difference, which has already been evaluated with the IncrEval-Function
+	// However this would force the IncrEval to always produce a valid result (no repair needed) and 
+	// it would force an exact representation (no add ons onto eval fuction as penalties and so fort)
+	// alos this would require IncrEval to also change the state of currentNumElm and of currentModuleSize
 	_solution.invalid();
 }
 
 
 bool SMP2_Flip_Neighbor::equals(SMP2_Flip_Neighbor& _neighbor) {
-	unsigned element, newModule;
+	int element, newModule;
 	_neighbor.getMove(element, newModule);
 	
 	bool res;

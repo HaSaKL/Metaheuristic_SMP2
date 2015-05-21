@@ -13,14 +13,14 @@ class SMP2_Flip_Neighbor: public moNeighbor<SMP2, typename SMP2::Fitness> {
 private:
 	// A pair wich represents the desired Flip-Operations
 	// It consists of <element index, new module index>
-	std::pair<unsigned int, unsigned int> ElementToModule;
+	std::pair<int, int> ElementToModule;
 	
 public:
 	// set a new possible move
-	void setMove (unsigned int _element, unsigned int _newModule);
+	void setMove (int _element, int _newModule);
 	
 	// get the current move
-	void getMove (unsigned int & _element, unsigned int & _newModuel);
+	void getMove (int & _element, int & _newModule);
 	
 	// execute the current move
 	void move (SMP2 & _solution);
