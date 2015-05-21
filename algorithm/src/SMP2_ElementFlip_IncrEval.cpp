@@ -56,8 +56,12 @@ void SMP2_ElementFlip_IncrEval::operator ()(EOT& _solution, SMP2_Flip_Neighbor& 
 	incrTotal = incrInterModular + incrDirectInterModular + incrIndirectInterModular;
 	
 	_neighbor.fitness(_solution.fitness() + incrTotal);
+	
+	delete[] newNumElm;
+	delete[] oldNumElm;
+	delete[] oldTotalNumElm;
+	delete[] newTotalNumElm;
 }
 
 SMP2_ElementFlip_IncrEval::~SMP2_ElementFlip_IncrEval() {
-	delete _problem;
 }
