@@ -5,6 +5,10 @@
 // functionality (Helper, Getter-Functions, Constructors, ...)
 #include <eo>
 #include "SMP2.h"
+#include "SMP2_Eval.h"
+#include "SMP2_ElementFlip_Neighbor.h"
+#include "SMP2_AdjElementFlip_Neighborhood.h"
+#include "SMP2_ElementFlip_IncrEval.h"
 
 //checks for help demand and writes the status file and make_help
 void make_help(eoParser & _parser);
@@ -31,22 +35,57 @@ int main(int argc, char* argv[])
 		// needed, so rng works in other classes ....
 		rng.rand();
 		
-		// create a problem instance
+		// create a problem instance and load the file
 		SMP2 p(fileName);
 		
 		std::cout << " ... loaded. " << std::endl << std::endl;
 		
+		{
+		// define Problem evaluation cuntions
+		SMP2_Eval problem_eval;
 		
+		// Initialize the problem to a semi-greedy solution
+		p.GRASPInit(0.5);
 		
+		// evaluate the radomized solutions
+		problem_eval(p);
+		
+		p.printSolution();
+		std::cout << "Initial Fitness: " << p.fitness() << std::endl;
+		
+		// define the adjecent Swap Neighborhood and a Neighbor
+		SMP2_Flip_Neighbor n1;
+		SMP2_AdjElementFlip_Neighborhood nh;
+		
+		// initialize the nighrborhood
+		nh.init(p, n1);
+		
+		std::cout << "First possible Flip: ";
+		n1.print();
+		
+		// initialize Incremental Evaluation
+		SMP2_ElementFlip_IncrEval neighbor_eval(p);
+		
+		// calculate new fitness with incrementa evaluation
+		neighbor_eval(p, n1);
+		std::cout << "New Fitness should be: " << n1 << std::endl<<std::endl;
+		
+		// get result using full evaluation for comparision and error detection
+		std::cout << "Performing Flip." << std::endl;
+		n1.move(p);
+		p.printSolution();
+		std::cout << "New Fitness is: " << p.fitness() << std::endl << std::endl;
+		} // */ 
+			
 		
 		// Test if the the RCL with Alpha = 1 return the same results as a purely random assignment
 		/* {
 		// Make some experiments with Greedy-Initilaization and compare them to RandomInitialization
-		int trys = 5000000;
+		int trys = 50000000;
 		double alpha = 1.1;
 		double ResRandom = 0;
 		double ResGreedy = 0;
-		
+		/*
 		for (alpha = 0.0; alpha < 1; alpha = alpha + 0.05) {
 			ResGreedy = 0;
 			for (int i = 0; i < trys; i++) {
@@ -55,12 +94,12 @@ int main(int argc, char* argv[])
 				ResGreedy += p.fitness();
 			}
 			std::cout << "Average Greedy Result: " << ResGreedy / trys << " (alpha = " << alpha << ")" << std::endl;
-		}
+		} // */
 		
 		// do it for a manual alpha = 1, since the adding up (above) does not work to good on doubles and does not consider the entire RCL
 		// this value for alpha = 1 is compared with the random construction to validate the implementation
 		// for alpha = 1 the Greedy-Construction should behave like a purely random assignment
-		ResGreedy = 0;
+		/*ResGreedy = 0;
 		alpha = 1.0001;
 		for (int i = 0; i < trys; i++) {
 			p.GRASPInit(alpha);
@@ -75,7 +114,7 @@ int main(int argc, char* argv[])
 			ResRandom += p.fitness();
 		}	
 		std::cout << "Average Random Result: " << ResRandom / trys << std::endl;
-		//} */
+		} // */
 		
 		/* Test if file could be read .... */
 		// test if matrix could be read
@@ -140,6 +179,7 @@ int main(int argc, char* argv[])
 		p.printSolution();
 		p.fullEvaluation();
 		p.printFitness();
+		
 		}
 		//*/
 		
