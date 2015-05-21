@@ -25,7 +25,8 @@ int main(int argc, char* argv[])
 		std::cout << "Loading Problem ... " << std::endl;
 		
 		std::string fileName = "../../problems/Test4-10-5.dat";
-		std::cout << fileName << std::endl << std::endl;
+		std::cout << fileName;
+
 		
 		// needed, so rng works in other classes ....
 		rng.rand();
@@ -33,11 +34,16 @@ int main(int argc, char* argv[])
 		// create a problem instance
 		SMP2 p(fileName);
 		
-		//p.GRASPInit(1.1);
+		std::cout << " ... loaded. " << std::endl << std::endl;
 		
+		
+		
+		
+		// Test if the the RCL with Alpha = 1 return the same results as a purely random assignment
+		/* {
 		// Make some experiments with Greedy-Initilaization and compare them to RandomInitialization
-		int trys = 10000;
-		double alpha = 1;
+		int trys = 5000000;
+		double alpha = 1.1;
 		double ResRandom = 0;
 		double ResGreedy = 0;
 		
@@ -55,7 +61,7 @@ int main(int argc, char* argv[])
 		// this value for alpha = 1 is compared with the random construction to validate the implementation
 		// for alpha = 1 the Greedy-Construction should behave like a purely random assignment
 		ResGreedy = 0;
-		alpha = 1;
+		alpha = 1.0001;
 		for (int i = 0; i < trys; i++) {
 			p.GRASPInit(alpha);
 			p.fullEvaluation();
@@ -69,7 +75,7 @@ int main(int argc, char* argv[])
 			ResRandom += p.fitness();
 		}	
 		std::cout << "Average Random Result: " << ResRandom / trys << std::endl;
-		// */
+		//} */
 		
 		/* Test if file could be read .... */
 		// test if matrix could be read

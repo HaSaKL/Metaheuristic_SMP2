@@ -1,18 +1,8 @@
 /* The Class QAP_Problem defines the representation of the
  * Simulataneous Multi-Path Service Modularization Problem (SMP2).
  *
- *
- *
  * This is a MINIMIZATION problem.
  * The class also provides basic functions like:
- *
- * - reading the Problem to set Problem Parameters (FIXME: missing)
- * - Evaluation of Problems' fitness value (FIXME: missing)
- * - Random Initialization of solution (FIXME: missing)
- *
- * FIXME: Currently Missing Features are:
- * - Gready Initalization
- * - a better organization for creating and deleting problem parameters
  *
  * The fitness-setter, getter and the printing are inherited from EO-class
  *
@@ -24,52 +14,53 @@
 // needed for base classes and random numbers
 #include <eo>
 #include <set>
-#include <utility> 	// for std::pair-container used in GRASP
-#include <vector>	// for the std::vector-container used in GRASP
-#include <algorithm>// for std::alogirhms like sort, for_each in GRASP
+#include <utility>	// for std::pair-container used in GRASP
+#include <vector>		// for the std::vector-container used in GRASP
+#include <algorithm>	// for std::alogirhms like sort, for_each in GRASP
 
 class SMP2 : public EO<eoMinimizingFitness>
 {
 public:
-    // actual representation of the problems solution using
-    // an integer vector representing for each task to what module
-    // it is assigned
-    int* solution;
+	// actual representation of the problems solution using
+	// an integer vector representing for each task to what module
+	// it is assigned
+	int* solution;
 
-    // Constructors
-    SMP2();                      // Default Constructor
-    SMP2(SMP2& _problem);        // Copy Constructor
-    SMP2(std::string& _fileName);// with Problem file
+	// Constructors
+	SMP2();                      // Default Constructor
+	SMP2(SMP2& _problem);        // Copy Constructor
+	SMP2(std::string& _fileName);// with Problem file
 
-    // Destructor
-    ~SMP2();
+	// Destructor
+	~SMP2();
 
-    // Overloaded Operators
-    void operator=(SMP2& _problem); // copy assignment
-    int& operator[](int i);         // subsetting operator
+	// Overloaded Operators
+	void operator=(SMP2& _problem); // copy assignment
+	int& operator[](int i);         // subsetting operator
 
-    // Getter Methods
-    int** GetDSM();
-    double* GetInterCosts();
-    int* GetInterMaxSize();
-    double* GetIntraCosts();
-    int* GetIntraMaxSize();
-    int GetNumInter();
-    int GetNumIntra();
-    int GetNumModule();
-    int GetNumPath();
-    int GetNumTask();
-    bool** GetPathDef();
-    double* GetPathProb();
+	// Getter Methods
+	int** GetDSM();
+	double* GetInterCosts();
+	int* GetInterMaxSize();
+	double* GetIntraCosts();
+	int* GetIntraMaxSize();
+	int GetNumInter();
+	int GetNumIntra();
+	int GetNumModule();
+	int GetNumPath();
+	int GetNumTask();
+	bool** GetPathDef();
+	double* GetPathProb();
 	
-    // Convinience Functions
-    void printSolution();
-    void printFitness();
+	// Convinience Functions
+	void printSolution();
+	void printFitness();
 
-    // Problem-specific Fuctions
-    void fullEvaluation();
-    void RandomInit();
-    void GRASPInit(double alpha);
+	// Problem-specific Fuctions
+	void fullEvaluation();
+	double CalculateSingleIntraModularCosts(int moduleSize);
+	void RandomInit();
+	void GRASPInit(double alpha);
 	
 
 	
@@ -81,7 +72,9 @@ private:
 
 
 	// convinience fuctions for calculating costs and costs increases
-	double CalculateIntraModularCosts(int moduleSize);
+	double CalcualteDirectInterModularCosts();
+	double CalculateTotalIntraModularCosts();
+	double CalculateIndirectInterModularCosts();
 	double CalculateIndirectInterModularCosts(int numElm[]);
 
 	// FIXME: These could go into SMP2_GreedyInit.h
@@ -93,7 +86,6 @@ private:
 	void GRASPInitCandidateList(std::vector<RCL_element> & _rcl);
 	void GRASPAddAssignment(std::vector<RCL_element> & _rcl, double alpha);
 	void GRASPUpdateCandidateList(std::vector<RCL_element> & _rcl);
-	int* numElm;
 	
 	
     /* PROBLEM-INSTANCE DEPENDENT PARAMETERS */
@@ -144,6 +136,13 @@ private:
 	// CHECKME: Could this be realized with a map or a multimap
     double* intraCosts;
     int* intraMaxSize;
+	
+	// Some values to ease calculations for small changes. Work like chaches for calulations
+	// Number of Elements which are assigned to each module
+	int* currentModuleSize;
+	
+	// Number of Elements between modules, considering module hierarchy for each path
+	int* currentNumElm;
 };
 
 #endif
