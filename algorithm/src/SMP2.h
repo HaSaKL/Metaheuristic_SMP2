@@ -61,7 +61,7 @@ public:
 	// Problem-specific Fuctions
 	void fullEvaluation();
 	double CalculateIntraModularCosts(int moduleSize);
-	double CalculateDirectInterModularCosts(int i, int m, int numElm[]); //costs for on single task i in module m depending on given assignment of all other tasks
+	double CalculateDirectInterModularCostsElement(int i, int m, int numElm[]); //costs for on single task i in module m depending on given assignment of all other tasks
 	double CalculateIndirectInterModularCosts(int numElm[]);
 	void RandomInit();
 	void GRASPInit(double alpha);

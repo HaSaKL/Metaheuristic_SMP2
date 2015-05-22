@@ -338,7 +338,7 @@ void SMP2::fullEvaluation() {
 	// add all costs components
 	totalCosts = intraModularCosts + directInterModularCosts + indirectInterModularCosts;
 	
-	/*//DEBUG!
+	//DEBUG!
 	std::cout << std::endl;
 	std::cout << "Direct Intermodular Costs: " << directInterModularCosts << std::endl;
 	std::cout << "Indirect Intermodualr Costs: " << indirectInterModularCosts << std::endl;
@@ -410,52 +410,51 @@ double SMP2::CalculateDirectInterModularCosts() {
 	for(int p = 0; p < numPath; p++) {
 		currentNumElm[p] = 0;
 	}
-	
+
 	// go through all possible element combinations i.o.t. calculate the direct intermodular costs
 	// also calculates and updates the number of elements for a given assignment
-	// FIXME: Use CalcualteDirectInterModualrCosts(int i, int m, int numElm[] call to simplify
 	for (int i = 0; i < numTask; i++) {
-		directInterModularCosts += CalculateDirectInterModularCosts(i, solution[i], currentNumElm);
-		/*for (int j = 0; j < numTask; j++) {
-			// only consider costs if element is in upper triagular matrix, i.e. module for j is greater then module for i
-			if (solution[i] < solution[j]) {
-				// only do the following if there are any costs at all and do for each path
-				if (DSM[i][j] > 0) {
-					for (int p = 0; p < numPath; p++) {
-						// check if it is relevant on that path
-						if (pathDef[p][i] && pathDef[p][j]) {
-							//increase number of elements for that path
-							currentNumElm[p] += 1;
-							
-							// add costs to direct intermodular costs, minding path prob
-							directInterModularCosts += ( DSM[i][j] * pathProb[p] );
-						}
+		for (int j = 0; j < numTask; j++) {
+			// only consider costs if element is in upper triangular matrix, i.e. module for j is greater then module for i 
+			// and if there are any costs at all
+			if(i != j && DSM[i][j] > 0 && solution[i] < solution[j]) {
+				for (int p = 0; p < numPath; p++) {
+					// check if it is relevant on that path
+					if (pathDef[p][i] && pathDef[p][j]) {
+						directInterModularCosts += ( DSM[i][j] * pathProb[p] );
+						currentNumElm[p] += 1;
 					}
-				}
-			}	
-		}*/
-	}
-	
-	return directInterModularCosts;
-}
-
-double SMP2::CalculateDirectInterModularCosts(int i, int m, int numElm[]) {
-	double DirectInterCosts = 0;
-	
-	for (int j = 0; j < numTask; j++) {
-		// only consider costs if element is in upper triangular matrix, i.e. module for j is greater then module for i 
-		// and if there are any costs at all
-		if(i != j && DSM[i][j] > 0 && m < solution[j]) {
-			for (int p = 0; p < numPath; p++) {
-				// check if it is relevant on that path
-				if (pathDef[p][i] && pathDef[p][j]) {
-					DirectInterCosts += ( DSM[i][j] * pathProb[p] );
-					numElm[p] += 1;
 				}
 			}
 		}
 	}
 	
+	return directInterModularCosts;
+}
+
+double SMP2::CalculateDirectInterModularCostsElement(int i, int m, int numElm[]) {
+	double DirectInterCosts = 0;
+	
+	for (int j = 0; j < numTask; j++) {
+		// only consider costs if element is in upper triangular matrix, i.e. module for j is greater then module for i 
+		// and if there are any costs at all
+		if(i != j && (DSM[i][j] > 0 || DSM[j][i] > 0) ) {
+			for (int p = 0; p < numPath; p++) {
+				// check if it is relevant on that path
+				if (pathDef[p][i] && pathDef[p][j]) {
+					if (m < solution[j] && DSM[i][j] > 0) {
+						DirectInterCosts += ( DSM[i][j] * pathProb[p] );
+						numElm[p] +=1;
+					}
+					if (m > solution[j] && DSM[j][i]) {
+						DirectInterCosts += ( DSM[j][i] * pathProb[p] );
+						numElm[p] += 1;
+					}
+				}
+			}
+		}
+	}
+	std::cout << "Direct Inter Costs (" << i << " to " << m << "): " << DirectInterCosts << std::endl;
 	return DirectInterCosts;
 }
 

@@ -56,15 +56,17 @@ int main(int argc, char* argv[])
 		// define the adjecent Swap Neighborhood and a Neighbor
 		SMP2_Flip_Neighbor n1;
 		SMP2_AdjElementFlip_Neighborhood nh;
+
+		// initialize Incremental Evaluation
+		SMP2_ElementFlip_IncrEval neighbor_eval(p);
+		
 		
 		// initialize the nighrborhood
 		nh.init(p, n1);
 		
+		
 		std::cout << "First possible Flip: ";
 		n1.print();
-		
-		// initialize Incremental Evaluation
-		SMP2_ElementFlip_IncrEval neighbor_eval(p);
 		
 		// calculate new fitness with incrementa evaluation
 		neighbor_eval(p, n1);
@@ -74,7 +76,17 @@ int main(int argc, char* argv[])
 		std::cout << "Performing Flip." << std::endl;
 		n1.move(p);
 		p.printSolution();
+		p.fullEvaluation();
 		std::cout << "New Fitness is: " << p.fitness() << std::endl << std::endl;
+		
+		// show the next possible moves:
+		/*std::cout << "Next possible moves in neighborhood are: " << std::endl;
+		while(nh.cont(p)) {
+			nh.next(p,n1);
+			neighbor_eval(p,n1);
+			n1.print();
+		}*/
+		
 		} // */ 
 			
 		
