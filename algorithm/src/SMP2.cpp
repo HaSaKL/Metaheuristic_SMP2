@@ -32,11 +32,9 @@ SMP2::SMP2(SMP2 & _problem) {
 	// solution-specific values are not copied an thus need to be created
 	// allocate memory for the size of the modules for the current assignments
 	int * currentModuleSize = new int[numModule]();
-	std::cout << "ModSize Copy Constr." << std::endl;
 	
 	// allocate memor for the number of coordiantion tasks between modules for each path
 	int* currentNumElm = new int[numPath]();
-	std::cout << "currentNumElm Copy Constr." << std::endl;
 }
 
 // Regular Constructor with file pointer
@@ -338,7 +336,7 @@ void SMP2::fullEvaluation() {
 	// add all costs components
 	totalCosts = intraModularCosts + directInterModularCosts + indirectInterModularCosts;
 	
-	//DEBUG!
+	/*//DEBUG!
 	std::cout << std::endl;
 	std::cout << "Direct Intermodular Costs: " << directInterModularCosts << std::endl;
 	std::cout << "Indirect Intermodualr Costs: " << indirectInterModularCosts << std::endl;
@@ -454,7 +452,7 @@ double SMP2::CalculateDirectInterModularCostsElement(int i, int m, int numElm[])
 			}
 		}
 	}
-	std::cout << "Direct Inter Costs (" << i << " to " << m << "): " << DirectInterCosts << std::endl;
+	
 	return DirectInterCosts;
 }
 

@@ -21,10 +21,11 @@ void SMP2_ElementFlip_IncrEval::operator ()(EOT& _solution, SMP2_Flip_Neighbor& 
 	int oldModule;
 	_neighbor.getMove(elm, newModule);
 	oldModule = _problem->solution[elm];
+	/*//DEBUG 
 	std::cout << std::endl << "old Module: " << oldModule << std::endl;
 	std::cout << "new Module: " << newModule << std::endl;
 	std::cout << "Element: " << elm << std::endl << std::endl;
-	
+	// */
 	
 	// calculate change in intramodular costs
 	int currentSizeNew = _problem->GetCurrentModuleSize(newModule);
@@ -67,7 +68,7 @@ void SMP2_ElementFlip_IncrEval::operator ()(EOT& _solution, SMP2_Flip_Neighbor& 
 	delete[] oldTotalNumElm;
 	delete[] newTotalNumElm;
 	
-	// DEBUG
+	/*// DEBUG
 	std::cout << std::endl;
 	std::cout << "Change in Direct Intermodular Costs: " << incrDirectInterModular << std::endl;
 	std::cout << "Change in Indirect Intermodular Costs: " << incrIndirectInterModular << std::endl;
