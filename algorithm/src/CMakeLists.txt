@@ -10,6 +10,9 @@ set (SMP2_SOURCES
 		SMP2_ElementFlip_IncrEval.cpp
 		
 		SMP2_AdjElementFlip_Neighborhood.cpp
+		SMP2_ElementFlip_IncrEval.cpp
+		
+		SMP2_CLI.h
 		)
 				
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
