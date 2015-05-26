@@ -444,7 +444,7 @@ double SMP2::CalculateDirectInterModularCostsElement(int i, int m, int numElm[])
 						DirectInterCosts += ( DSM[i][j] * pathProb[p] );
 						numElm[p] +=1;
 					}
-					if (m > solution[j] && DSM[j][i]) {
+					if (m > solution[j] && DSM[j][i] > 0) {
 						DirectInterCosts += ( DSM[j][i] * pathProb[p] );
 						numElm[p] += 1;
 					}
@@ -456,6 +456,58 @@ double SMP2::CalculateDirectInterModularCostsElement(int i, int m, int numElm[])
 	return DirectInterCosts;
 }
 
+void SMP2::UpdateModuleSize(int elm, int newModule) {
+	// Recalculates the numeber of elements assigned to each module if a change of module occured for one specific elemente
+	// int elm = element whos assignment has been changes
+	// int module = new module
+	
+	currentModuleSize[newModule] =+ 1;
+	currentModuleSize[solution[elm]] =- 1;
+}
+
+void SMP2::UpdateNumElm(int elm, int newModule) {
+	// Recalculates the number of modules after a change of single element to another module has occured (e.g. during local search)
+	// int elm = element whos assignmend hs been changed
+	// int module = new module
+	
+	int* newNumElm = CalculateNumElmElement(elm, newModule);
+	int* oldNumElm = CalculateNumElmElement(elm, solution[elm]);
+	
+	for(int p = 0; p < numPath; p++) {
+		currentNumElm[p] -= oldNumElm[p];
+		currentNumElm[p] += newNumElm[p];
+	}
+	
+	delete[] newNumElm;
+	delete[] oldNumElm;
+}
+
+int* SMP2::CalculateNumElmElement(int elm, int module) {
+	// Calculates the Number of Elements in upper triagular matrix outside of modules 
+	// which are caused by the specific assignmet of an element (elm) to a module (module)
+	
+	int* newNumElm = new int[numPath]();
+	
+	for (int j = 0; j < numTask; j++) {
+	// only consider costs if element is in upper triangular matrix, i.e. module for j is greater then module for i 
+	// and if there are any costs at all
+		if(elm != j && (DSM[elm][j] > 0 || DSM[j][elm] > 0) ) {
+			for (int p = 0; p < numPath; p++) {
+				// check if it is relevant on that path
+				if (pathDef[p][elm] && pathDef[p][j]) {
+					if (module < solution[j] && DSM[elm][j] > 0) {
+						newNumElm[p] +=1;
+					}
+					if (module > solution[j] && DSM[j][elm] > 0) {
+						newNumElm[p] += 1;
+					}
+				}
+			}
+		}
+	}
+	
+	return newNumElm;
+}
 
 // Random Problem Initialization
 void SMP2::RandomInit() {

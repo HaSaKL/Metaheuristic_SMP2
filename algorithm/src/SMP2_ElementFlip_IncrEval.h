@@ -10,7 +10,6 @@ public:
 	typedef typename SMP2_Flip_Neighbor::EOT EOT;
 	
 	SMP2_ElementFlip_IncrEval(SMP2 & _probObj);
-	~SMP2_ElementFlip_IncrEval();
 	void operator() (EOT & _solution, SMP2_Flip_Neighbor & _neighbor); 
 	
 private:

@@ -66,6 +66,9 @@ public:
 	void RandomInit();
 	void GRASPInit(double alpha);
 	
+	// FIXME: This could also be put into the Neighbor-Definition
+	void UpdateNumElm(int elm, int newModule);
+	void UpdateModuleSize(int elm, int newModule);
 
 	
 
@@ -90,6 +93,7 @@ private:
 	void GRASPAddAssignment(std::vector<RCL_element> & _rcl, double alpha);
 	void GRASPUpdateCandidateList(std::vector<RCL_element> & _rcl);
 	
+	int* CalculateNumElmElement(int elm, int module);
 	
     /* PROBLEM-INSTANCE DEPENDENT PARAMETERS */
     // FIXME: Would container types (Vecotr, Array) make my life easier?

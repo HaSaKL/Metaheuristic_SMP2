@@ -30,10 +30,11 @@ void SMP2_ElementFlip_IncrEval::operator ()(EOT& _solution, SMP2_Flip_Neighbor& 
 	// calculate change in intramodular costs
 	int currentSizeNew = _problem->GetCurrentModuleSize(newModule);
 	int currentSizeOld = _problem->GetCurrentModuleSize(oldModule);
-	incrIntraModular = _problem->CalculateIntraModularCosts(currentSizeNew+1) -
+	incrIntraModular = _problem->CalculateIntraModularCosts(currentSizeNew + 1) -
 						 _problem->CalculateIntraModularCosts(currentSizeNew) +
 						 _problem->CalculateIntraModularCosts(currentSizeOld - 1) -
 						 _problem->CalculateIntraModularCosts(currentSizeOld);
+	
 	
 	// calculate the change in direct intermodular costs and get the numElm for this module
 	int* newNumElm = new int[_problem->GetNumPath()]();
@@ -43,7 +44,7 @@ void SMP2_ElementFlip_IncrEval::operator ()(EOT& _solution, SMP2_Flip_Neighbor& 
 	double oldDirectInterModularCosts = _problem->CalculateDirectInterModularCostsElement(elm, oldModule, oldNumElm);
 	incrDirectInterModular = newDirectInterModularCosts - oldDirectInterModularCosts;
 	
-	// calculate the change in indirect intermodular costs on the basis of the change number of elements
+	// calculate the change in indirect intermodular costs on the basis of the changed number of elements
 	int* oldTotalNumElm = new int[_problem->GetNumPath()];
 	for(int p = 0; p < _problem->GetNumPath(); p++) {
 		oldTotalNumElm[p] = _problem->GetCurrentNumElm()[p];
@@ -63,6 +64,7 @@ void SMP2_ElementFlip_IncrEval::operator ()(EOT& _solution, SMP2_Flip_Neighbor& 
 	
 	_neighbor.fitness(_solution.fitness() + incrTotal);
 	
+	// free memory
 	delete[] newNumElm;
 	delete[] oldNumElm;
 	delete[] oldTotalNumElm;
@@ -70,13 +72,12 @@ void SMP2_ElementFlip_IncrEval::operator ()(EOT& _solution, SMP2_Flip_Neighbor& 
 	
 	/*// DEBUG
 	std::cout << std::endl;
-	std::cout << "Change in Direct Intermodular Costs: " << incrDirectInterModular << std::endl;
-	std::cout << "Change in Indirect Intermodular Costs: " << incrIndirectInterModular << std::endl;
-	std::cout << "Change in Intramodular Costs: " << incrIntraModular << std::endl;
-	std::cout << "Total Change: " << incrTotal << std::endl;
-	std::cout << "Current Fitness: " << _solution.fitness() << std::endl; 
+	std::cout << "Change " << elm << " from " << oldModule << " to " << newModule << std::endl;
+	//std::cout << "Total Change: " << incrTotal << std::endl;
+	std::cout << "Current fitness is: " << _solution.fitness() << "\t New fitness would be: " << _solution.fitness() + incrTotal << std::endl;
 	// */
-}
-
-SMP2_ElementFlip_IncrEval::~SMP2_ElementFlip_IncrEval() {
+	
+	/*// DEBUG
+	std::cout << "Delta Intramodular: " << incrIntraModular << "\t Delta direct Intermodular: " << incrDirectInterModular << "\t\t Delta indirect Intermodular: " << incrIndirectInterModular << std::endl;
+	// */
 }
