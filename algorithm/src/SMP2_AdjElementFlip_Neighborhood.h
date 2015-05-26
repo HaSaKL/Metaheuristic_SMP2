@@ -10,7 +10,7 @@
 class SMP2_AdjElementFlip_Neighborhood : public moNeighborhood<SMP2_Flip_Neighbor> {
 private:
 	// The generic representation of a module flip for an element
-	std::pair<unsigned int, unsigned int> ElementToModule;
+	std::pair<int, int> ElementToModule;
 	
 	// indicator if the current movement was a upward or downward movement
 	// toogler
