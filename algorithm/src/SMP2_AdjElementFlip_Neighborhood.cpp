@@ -23,7 +23,6 @@ void SMP2_AdjElementFlip_Neighborhood::init(SMP2& _solution, SMP2_Flip_Neighbor&
 	ElementToModule.first = 0;
 	
 	// see if the next modue needs to be wrapped around or if it is still in range
-	int maxModule = _solution.GetNumModule();
 	int newModule;
 	current_up = true;
 	if (_solution[0] == _solution.GetNumModule() -1) {

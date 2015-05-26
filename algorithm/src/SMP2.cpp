@@ -461,8 +461,15 @@ void SMP2::UpdateModuleSize(int elm, int newModule) {
 	// int elm = element whos assignment has been changes
 	// int module = new module
 	
-	currentModuleSize[newModule] =+ 1;
-	currentModuleSize[solution[elm]] =- 1;
+	currentModuleSize[newModule] += 1;
+	currentModuleSize[solution[elm]] -= 1;
+	
+	/*// DEBUG
+	for(int m = 0; m < numModule; m++) {
+		std::cout << currentModuleSize[m] << " ";
+	}
+	std::cout << std::endl;
+	*/
 }
 
 void SMP2::UpdateNumElm(int elm, int newModule) {

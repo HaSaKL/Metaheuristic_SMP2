@@ -75,9 +75,12 @@ void SMP2_ElementFlip_IncrEval::operator ()(EOT& _solution, SMP2_Flip_Neighbor& 
 	std::cout << "Change " << elm << " from " << oldModule << " to " << newModule << std::endl;
 	//std::cout << "Total Change: " << incrTotal << std::endl;
 	std::cout << "Current fitness is: " << _solution.fitness() << "\t New fitness would be: " << _solution.fitness() + incrTotal << std::endl;
-	// */
+	// 
 	
-	/*// DEBUG
-	std::cout << "Delta Intramodular: " << incrIntraModular << "\t Delta direct Intermodular: " << incrDirectInterModular << "\t\t Delta indirect Intermodular: " << incrIndirectInterModular << std::endl;
+	// DEBUG
+	std::cout << "Delta Intramodular: " << incrIntraModular;
+	//std::cout << "\t Delta direct Intermodular: " << incrDirectInterModular;
+	//std::cout << "\t\t Delta indirect Intermodular: " << incrIndirectInterModular;
+	std::cout << std::endl;
 	// */
 }
