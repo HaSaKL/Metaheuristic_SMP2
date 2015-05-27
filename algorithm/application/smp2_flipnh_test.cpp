@@ -4,6 +4,11 @@
 
 #include <eo>
 #include <algo/moSimpleHC.h>
+#include <time.h>		// time measurement
+
+// for writing output to file
+#include <fstream>
+#include <iostream>
 
 #include "SMP2.h"
 #include "SMP2_Eval.h"
@@ -51,68 +56,76 @@ int main(int argc, char* argv[])
 		SMP2_ElementFlip_IncrEval IncrEval(p);
 		
 		
-		std::cout << "SINGLE VERBOSE TEST..." << std::endl;
-		
-		// Print initial Solution and fitness
-		std::cout << "Initial Solution (alpha = " << alpha << "): ";
-		p.printSolution();
-		std::cout << "Initial Fitness: ";
-		p.printFitness();
-		std::cout << std::endl;
-		
 		// define HC-Algorithm
 		moSimpleHC<SMP2_Flip_Neighbor> SimpleHC(nh_AdjFlip, FullEval, IncrEval);
 		
-		// Perform HC-Algorithm
-		SimpleHC(p);
 
-		// print final solution and fitness
-		std::cout << "Final Solution: ";
-		p.printSolution(); 
-		std::cout << "Final Fitness: ";
-		p.printFitness();
-		std::cout << std::endl;
-		
-		// DEBUG
-		// print final solution and fitness
-		FullEval(p);
-		std::cout << "Final Solution eval: ";
-		p.printSolution(); 
-		std::cout << "Final Fitness eval: ";
-		p.printFitness();
-		// */
-		
-		std::cout << std::endl << std::endl;
-		std::cout << "RUNNING MORE TESTS" << std::endl;
+		// definition of tests to run
+		clock_t t;
 		
 		int MaxIt = 1000000;
+		
 		double avgInitSol = 0;
 		double avgFinalSol = 0;
+		double avgSolTime = 0;
+		
 		double cInitSol = 0;
 		double cFinalSol = 0;
+		double cSolTime = 0;
 		
-		for(int it = 0; it < MaxIt; it++) {
+		// initialize output
+		std::ofstream outputFile;
+
+		outputFile.open(param.outputFile.c_str());
+		std::cout << "Writing results to " << param.outputFile.c_str() << std::endl;
+
+		outputFile << "TestProblem; alpha; AverageInitialSolution; AverageFinalSolution; AverageSolutionTime \n";
+		
+		for(double alpha = 0; alpha <= 1 ; alpha += 0.025) {
 			
-			std::cout << std::endl;
-			std::cout << "It: " << it + 1 << " of " << MaxIt;
-			p.GRASPInit(alpha);
-			FullEval(p);
-			cInitSol = p.fitness();
-			std::cout << "\t Init: " << cInitSol;
+			avgInitSol = 0;
+			avgFinalSol = 0;
+			avgSolTime = 0;
 			
-			SimpleHC(p);
-			FullEval(p);
-			cFinalSol = p.fitness(); 
-			std::cout << "\t Final: " << cFinalSol;
+			for(int it = 0; it < MaxIt; it++) {
 			
-			avgInitSol += cInitSol / MaxIt;
-			avgFinalSol += cFinalSol / MaxIt;
+				t = clock();
+				
+				//std::cout << std::endl;
+				//std::cout << "It: " << it + 1 << " of " << MaxIt;
+				p.GRASPInit(alpha);
+				FullEval(p);
+				cInitSol = p.fitness();
+				//std::cout << "\t Init: " << cInitSol;
+			
+				SimpleHC(p);
+				FullEval(p);
+				cFinalSol = p.fitness(); 
+				//std::cout << "\t Final: " << cFinalSol;
+				
+				t = clock() - t;
+				cSolTime = double(t) * 1000 / (CLOCKS_PER_SEC);
+				
+				avgInitSol += cInitSol / MaxIt;
+				avgFinalSol += cFinalSol / MaxIt;
+				avgSolTime += cSolTime / MaxIt;
+			
+			}
+			// Output to screen
+			std::cout << std::endl << "Alpha = " << alpha << std::endl;
+			std::cout << "Average Initial Solution:   " << avgInitSol << std::endl;
+			std::cout << "Average Final Solution:     " << avgFinalSol << std::endl;
+			std::cout << "Average Solution Time [ms]: " << avgSolTime << std::endl;
+			std::cout << "Average Improvement:        " << ((avgInitSol - avgFinalSol) / avgInitSol) * 100 << " %" << std::endl;
+			
+			// Output to file
+			outputFile << param.problemFile << "; " << alpha << "; ";
+			outputFile	<< avgInitSol << "; " << avgInitSol << "; ";
+			outputFile << avgSolTime << "\n";
 		}
 		
-		std::cout << std::endl << "--------------------------------------------" << std::endl;
-		std::cout << "Average Initial Solution: " << avgInitSol << std::endl;
-		std::cout << "Average Final Solution:   " << avgFinalSol << std::endl;
-		std::cout << "Average Improvement:      " << ((avgInitSol - avgFinalSol) / avgInitSol) * 100 << " %" << std::endl;
+		// close output file
+		outputFile.close();
 		
 		make_help(parser);
 	}

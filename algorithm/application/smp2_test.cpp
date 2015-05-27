@@ -40,12 +40,12 @@ int main(int argc, char* argv[])
 		
 		std::cout << " ... loaded. " << std::endl << std::endl;
 		
-		{
+		/*{
 		// define Problem evaluation cuntions
 		SMP2_Eval problem_eval;
 		
 		// Initialize the problem to a semi-greedy solution
-		p.GRASPInit(0.5);
+		p.GRASPInit(0.1);
 		
 		// evaluate the radomized solutions
 		problem_eval(p);
@@ -65,40 +65,46 @@ int main(int argc, char* argv[])
 		nh.init(p, n1);
 		
 		
-		std::cout << "First possible Flip: ";
+		/*std::cout << "First possible Flip: ";
 		n1.print();
 		
 		// calculate new fitness with incrementa evaluation
 		neighbor_eval(p, n1);
 		std::cout << "New Fitness should be: " << n1 << std::endl<<std::endl;
+		*/
 		
-		// get result using full evaluation for comparision and error detection
+		/*// get result using full evaluation for comparision and error detection
 		std::cout << "Performing Flip." << std::endl;
 		n1.move(p);
 		p.printSolution();
 		p.fullEvaluation();
 		std::cout << "New Fitness is: " << p.fitness() << std::endl << std::endl;
 		
+		  
 		// show the next possible moves:
-		/*std::cout << "Next possible moves in neighborhood are: " << std::endl;
+		std::cout << "Next possible moves in neighborhood are: " << std::endl;
+		neighbor_eval(p, n1);
+		std::cout << n1 << " -> ";
+		n1.print();
 		while(nh.cont(p)) {
 			nh.next(p,n1);
 			neighbor_eval(p,n1);
+			std::cout << n1 << "-> ";
 			n1.print();
-		}*/
+		}
 		
 		} // */ 
 			
 		
 		// Test if the the RCL with Alpha = 1 return the same results as a purely random assignment
-		/* {
+		 {
 		// Make some experiments with Greedy-Initilaization and compare them to RandomInitialization
-		int trys = 50000000;
+		int trys = 1000;
 		double alpha = 1.1;
 		double ResRandom = 0;
 		double ResGreedy = 0;
-		/*
-		for (alpha = 0.0; alpha < 1; alpha = alpha + 0.05) {
+		
+		for (alpha = 0.0; alpha <= 1; alpha = alpha + 0.025) {
 			ResGreedy = 0;
 			for (int i = 0; i < trys; i++) {
 				p.GRASPInit(alpha);
@@ -111,7 +117,7 @@ int main(int argc, char* argv[])
 		// do it for a manual alpha = 1, since the adding up (above) does not work to good on doubles and does not consider the entire RCL
 		// this value for alpha = 1 is compared with the random construction to validate the implementation
 		// for alpha = 1 the Greedy-Construction should behave like a purely random assignment
-		/*ResGreedy = 0;
+		ResGreedy = 0;
 		alpha = 1.0001;
 		for (int i = 0; i < trys; i++) {
 			p.GRASPInit(alpha);
@@ -164,7 +170,7 @@ int main(int argc, char* argv[])
 		
 		// Test evaluation fuction and caclulate a known optimal solution for Test4-10-5.dat
 		// FIXME: Write a test for this...
-		/*{
+		{
 		
 		// initialize some solution
 		std::cout << "Initialize to optimal solution ... Objective Fuction Value should be 69.71 " << std::endl;

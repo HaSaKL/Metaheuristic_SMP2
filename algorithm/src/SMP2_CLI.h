@@ -5,6 +5,7 @@
 struct parameters {
 	unsigned seed;
 	std::string problemFile;
+	std::string outputFile;
 };
 
 
@@ -27,6 +28,13 @@ void parseFile(eoParser & parser, parameters & param) {
 		"Param"
 		).value();	
 	
+	param.outputFile = parser.createParam(
+		std::string("output.csv"),
+		"resultsFile",
+		"Path to the results output file",
+		'o',
+		"Param"
+		).value();
 	
 	/*
 	param.seed = parser.createParam(unsigned(time(0)), "seed", "Random number seed", 'S').value(); // will be in default section General
