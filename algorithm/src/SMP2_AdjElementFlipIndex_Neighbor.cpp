@@ -45,7 +45,7 @@ void SMP2_AdjElementFlipIndex_Neighbor::translate(unsigned int _key, SMP2& _solu
 	// the direction. Remainder 0 -> up and Remainder 1 -> down
 	// all that is left to check is if there is a wrap around
 	
-	// define structure for div result (consists of rem and qout
+	// define structure for div result (consists of rem and qout)
 	div_t res;
 	res = div(_key,2);
 	

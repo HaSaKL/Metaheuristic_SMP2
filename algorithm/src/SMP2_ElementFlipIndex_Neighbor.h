@@ -1,15 +1,16 @@
-#ifndef SMP2_ADJELEMENTFLIPINDEX_NEIGHBOR_H
-#define SMP2_ADJELEMENTFLIPINDEX_NEIGHBOR_H
+#ifndef SMP2_ELEMENTFLIPINDEX_NEIGHBOR_H
+#define SMP2_ELEMENTFLIPINDEX_NEIGHBOR_H
 
 #include "SMP2.h"
 #include <neighborhood/moIndexNeighbor.h>
 
-#include <stdlib.h> // for efficient integer division (DIV) with remainder
+#include <stdlib.h> // for efficient integer division (DIV)
 
-// A neighbor which is used for an AdjecentElementFlip Indexed Neighborhood
-// Size should be (2 * NumElements)
+// A neighbor which is used for an ElementFlip Indexed Neighborhood
+// Size should be (NumElements * (NumModules - 1))
 
-class SMP2_AdjElementFlipIndex_Neighbor: public moIndexNeighbor<SMP2, SMP2::Fitness> {
+
+class SMP2_ElementFlipIndex_Neighbor: public moIndexNeighbor<SMP2, SMP2::Fitness> {
 private:
 	// A pair wich represents the desired Flip-Operations
 	// It consists of <element index, new module index>
@@ -23,4 +24,4 @@ public:
 	void getMove(int & _element, int & _newModule, SMP2 & _solution);
 };
 
-#endif // SMP2_ADJELEMENTFLIPINDEX_NEIGHBOR_H
+#endif // SMP2_ELEMENTFLIPINDEX_NEIGHBOR_H

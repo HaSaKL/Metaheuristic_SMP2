@@ -12,6 +12,8 @@ set (SMP2_SOURCES
 		SMP2_AdjElementFlipIndex_Neighbor.cpp
 		SMP2_AdjElementFlip_Neighborhood.cpp
 		
+		SMP2_ElementFlipIndex_Neighbor.cpp
+		
 		SMP2_CLI.h
 		)
 				
