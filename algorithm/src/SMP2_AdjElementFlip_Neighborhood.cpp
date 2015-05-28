@@ -18,7 +18,7 @@ bool SMP2_AdjElementFlip_Neighborhood::hasNeighbor(SMP2& _solution) {
 }
 
 
-void SMP2_AdjElementFlip_Neighborhood::init(SMP2& _solution, SMP2_Flip_Neighbor& _current) {
+void SMP2_AdjElementFlip_Neighborhood::init(SMP2& _solution, SMP2_ElementFlip_Neighbor& _current) {
 	// Start out with the first element
 	ElementToModule.first = 0;
 	
@@ -39,7 +39,7 @@ void SMP2_AdjElementFlip_Neighborhood::init(SMP2& _solution, SMP2_Flip_Neighbor&
 }
 
 
-void SMP2_AdjElementFlip_Neighborhood::next(SMP2& _solution, SMP2_Flip_Neighbor& _current) {
+void SMP2_AdjElementFlip_Neighborhood::next(SMP2& _solution, SMP2_ElementFlip_Neighbor& _current) {
 	if(current_up) {
 	// last movement was up, now it will be down
 		if(_solution[ElementToModule.first] == 0) {

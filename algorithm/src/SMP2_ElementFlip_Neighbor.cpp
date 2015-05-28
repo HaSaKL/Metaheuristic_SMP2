@@ -1,18 +1,18 @@
 #include "SMP2_ElementFlip_Neighbor.h"
 
-void SMP2_Flip_Neighbor::setMove(int _element, int _newModule) {
+void SMP2_ElementFlip_Neighbor::setMove(int _element, int _newModule) {
 	ElementToModule.first = _element;
 	ElementToModule.second = _newModule;
 }
 
 
-void SMP2_Flip_Neighbor::getMove(int& _element, int& _newModule) {
+void SMP2_ElementFlip_Neighbor::getMove(int& _element, int& _newModule, SMP2& _solution) {
 	_element = ElementToModule.first;
 	_newModule = ElementToModule.second;
 }
 
 
-void SMP2_Flip_Neighbor::move(SMP2& _solution) {
+void SMP2_ElementFlip_Neighbor::move(SMP2& _solution) {
 	_solution.UpdateNumElm(ElementToModule.first, ElementToModule.second);
 	_solution.UpdateModuleSize(ElementToModule.first, ElementToModule.second);
 	
@@ -33,16 +33,21 @@ void SMP2_Flip_Neighbor::move(SMP2& _solution) {
 }
 
 
-bool SMP2_Flip_Neighbor::equals(SMP2_Flip_Neighbor& _neighbor) {
-	int element, newModule;
-	_neighbor.getMove(element, newModule);
+bool SMP2_ElementFlip_Neighbor::equals(SMP2_ElementFlip_Neighbor& _neighbor) {
+	
+	std::pair<int,int> otherElementToModule = _neighbor.getElementToModule();
+	
 	
 	bool res;
 	// FIXME: Maybe a standard comparision for pair already does the tricK? Look it up!
-	res = ( (element == ElementToModule.first) && (newModule == ElementToModule.second));
+	res = ( (otherElementToModule.first == ElementToModule.first) && (otherElementToModule.second == ElementToModule.second));
 	return res;
 }
 
-void SMP2_Flip_Neighbor::print() {
+void SMP2_ElementFlip_Neighbor::print() {
 	std::cout << "[" << ElementToModule.first << "->" << ElementToModule.second << "]" << std::endl;
+}
+
+std::pair<int, int> SMP2_ElementFlip_Neighbor::getElementToModule() {
+	return ElementToModule;
 }

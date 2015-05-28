@@ -7,10 +7,10 @@ set (SMP2_SOURCES
 		SMP2_GreedyInit.cpp
 		
 		SMP2_ElementFlip_Neighbor.cpp
-		SMP2_ElementFlip_IncrEval.cpp
+		SMP2_ElementFlip_IncrEval.h
 		
+		SMP2_AdjElementFlipIndex_Neighbor.cpp
 		SMP2_AdjElementFlip_Neighborhood.cpp
-		SMP2_ElementFlip_IncrEval.cpp
 		
 		SMP2_CLI.h
 		)

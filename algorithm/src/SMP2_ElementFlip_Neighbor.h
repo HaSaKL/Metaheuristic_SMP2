@@ -8,7 +8,7 @@
 // on a sinlge change of one elements module assignment
 // is used by Adjecent Element Flip and Element Flip Neighborhoods
 
-class SMP2_Flip_Neighbor: public moNeighbor<SMP2, typename SMP2::Fitness> {
+class SMP2_ElementFlip_Neighbor: public moNeighbor<SMP2, typename SMP2::Fitness> {
 
 private:
 	// A pair wich represents the desired Flip-Operations
@@ -20,13 +20,16 @@ public:
 	void setMove (int _element, int _newModule);
 	
 	// get the current move
-	void getMove (int & _element, int & _newModule);
+	void getMove (int & _element, int & _newModule, SMP2 & _solution);
+	
+	// get the current ElementToModule Change;
+	std::pair<int, int> getElementToModule();
 	
 	// execute the current move
 	void move (SMP2 & _solution);
 	
 	// check if current move euqals another given move
-	bool equals(SMP2_Flip_Neighbor & _neighbor);
+	bool equals(SMP2_ElementFlip_Neighbor & _neighbor);
 	
 	// print the current move
 	void print();
