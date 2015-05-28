@@ -33,18 +33,25 @@ void SMP2_ElementFlipIndex_Neighbor::translate(unsigned int _key, SMP2& _solutio
 	
 	// This can be translated using integer devision with remainder:
 	// the integer value gives the Element which is moved and the remainder gives
-	// the amount to move, while making sure the wrap around ist considers
+	// the amount to move, while making sure the wrap around is considers and that the old solution is not choosen
 	
 	// define structure for div result (consists of rem and qout)
-	dev_t res;
-	int numModule = _solution.GetNumModule();
-	res = div(_key, numModule-1); // -1 since there are NumModule-1 other modules to consider
+	div_t res;
+	// -1 since there are NumModule-1 other modules to consider
+	unsigned int maxModuleNum = _solution.GetNumModule() -1; 
+	res = div(_key, maxModuleNum); 
+	
+	//DEBUG
+	//std::cout << std::endl << "Key: " << _key << ", Quotient: " << res.quot<< ", Remainder: " << res.rem << ", oldModule: " << _solution[ElementToModule.first] << ", maxModuleNum: " << maxModuleNum << std::endl;
 	
 	ElementToModule.first = res.quot;
 	
 	// wrap-around if you add to the current module an the new module would be larger then the maxModule value. In this case
 	// just subtract the maxModule value
-	res.rem > numModule -1 ? ElementToModule.second = res.rem - 5 : ElementToModule = res.rem;
+	ElementToModule.second = _solution[ElementToModule.first] + res.rem + 1;
+	if (ElementToModule.second > maxModuleNum) {
+		ElementToModule.second -= maxModuleNum+1;
+	}
 }
 
 

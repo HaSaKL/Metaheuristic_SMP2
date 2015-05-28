@@ -34,6 +34,7 @@ public:
 		std::cout << "IncrEval(" << elm << "[" << oldModule << "] ->";
 		std::cout << elm << "[" << newModule << "] = ";
 		std::cout << incrTotal << std::endl;
+		std::cin.get();
 		// */
 	
 	

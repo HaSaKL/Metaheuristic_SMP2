@@ -4,6 +4,9 @@
 
 #include <eo>
 #include <algo/moSimpleHC.h>
+#include <algo/moFirstImprHC.h>
+#include <neighborhood/moOrderNeighborhood.h>
+#include <neighborhood/moRndWithoutReplNeighborhood.h>
 #include <time.h>		// time measurement
 
 // for writing output to file
@@ -12,9 +15,13 @@
 
 #include "SMP2.h"
 #include "SMP2_Eval.h"
-#include "SMP2_ElementFlip_Neighbor.h"
-#include "SMP2_AdjElementFlip_Neighborhood.h"
 #include "SMP2_ElementFlip_IncrEval.h"
+
+#include "SMP2_ElementFlip_Neighbor.h"
+#include "SMP2_AdjElementFlipIndex_Neighbor.h"
+#include "SMP2_AdjElementFlip_Neighborhood.h"
+#include "SMP2_ElementFlipIndex_Neighbor.h"
+
 #include "SMP2_CLI.h"
 
 
@@ -47,23 +54,44 @@ int main(int argc, char* argv[])
 		
 		// Initialize Probem Instance
 		double alpha = 0.5;
-		p.GRASPInit(alpha);	
-		FullEval(p);
+		//p.GRASPInit(alpha);	
+		//FullEval(p);
 		
-		// Define Neighborhood and incremental Evaluation
-		SMP2_Flip_Neighbor n_flip;
+		/*// Define traditional neighborhood, evaluation and alogrithm
 		SMP2_AdjElementFlip_Neighborhood nh_AdjFlip;
-		SMP2_ElementFlip_IncrEval IncrEval(p);
+		SMP2_ElementFlip_IncrEval<SMP2_ElementFlip_Neighbor> IncrEval(p);
+		moSimpleHC<SMP2_ElementFlip_Neighbor> SimpleHC(nh_AdjFlip, FullEval, IncrEval);
+		// */
+	
+		/*// define indexed ordered neighborhood and evaluation
+		int NeighborhoodSize = p.GetNumTask() * 2;
+		std::cout << "Size: " << NeighborhoodSize << std::endl;
+		moOrderNeighborhood<SMP2_AdjElementFlipIndex_Neighbor> nh_AdjFlip(NeighborhoodSize);
+		SMP2_ElementFlip_IncrEval<SMP2_AdjElementFlipIndex_Neighbor> IncrEval(p);
+		moSimpleHC<SMP2_AdjElementFlipIndex_Neighbor> SimpleHC(nh_AdjFlip, FullEval, IncrEval);
+		// */
 		
+		/*// define indexed all elements random neighborhood and evaluation
+		int NeighborhoodSize = p.GetNumTask() * (p.GetNumModule() - 1);
+		std::cout << "Size: " << NeighborhoodSize << std::endl;
+		moRndWithoutReplNeighborhood<SMP2_ElementFlipIndex_Neighbor> nh_Flip(NeighborhoodSize);
+		SMP2_ElementFlip_IncrEval<SMP2_ElementFlipIndex_Neighbor> IncrEval(p);
+		moFirstImprHC<SMP2_ElementFlipIndex_Neighbor> SimpleHC(nh_Flip, FullEval, IncrEval);
+		// */
 		
-		// define HC-Algorithm
-		moSimpleHC<SMP2_Flip_Neighbor> SimpleHC(nh_AdjFlip, FullEval, IncrEval);
+		// define indexed element deterministic neighborhood and evaluation
+		int NeighborhoodSize = p.GetNumTask() * (p.GetNumModule() - 1);
+		std::cout << "Size: " << NeighborhoodSize << std::endl;
+		moOrderNeighborhood<SMP2_ElementFlipIndex_Neighbor> nh_Flip(NeighborhoodSize);
+		SMP2_ElementFlip_IncrEval<SMP2_ElementFlipIndex_Neighbor> IncrEval(p);
+		//moSimpleHC<SMP2_ElementFlipIndex_Neighbor> SimpleHC(nh_Flip, FullEval, IncrEval);
+		moFirstImprHC<SMP2_ElementFlipIndex_Neighbor> SimpleHC(nh_Flip, FullEval, IncrEval);
+		// */
 		
-
 		// definition of tests to run
 		clock_t t;
 		
-		int MaxIt = 1000000;
+		int MaxIt = 1000;
 		
 		double avgInitSol = 0;
 		double avgFinalSol = 0;
@@ -109,7 +137,6 @@ int main(int argc, char* argv[])
 				avgInitSol += cInitSol / MaxIt;
 				avgFinalSol += cFinalSol / MaxIt;
 				avgSolTime += cSolTime / MaxIt;
-			
 			}
 			// Output to screen
 			std::cout << std::endl << "Alpha = " << alpha << std::endl;
