@@ -28,6 +28,9 @@
 #include <continuator/moFitContinuator.h>
 #include <continuator/moIterContinuator.h>
 
+// possible alpha generators
+#include "GRASP_FixedAlpha.h"
+
 // time measurements
 #include <time.h>
 
@@ -40,6 +43,9 @@ private:
 	
 	// a pointer to the problem definition is kept for easier method-signatures
 	SMP2 * p;
+	
+	// a pointer to an alpha generator
+	GRASP_Alpha * alpha;
 	
 	// holds the neighborhood size for indexed neighborhoods
 	int NeighborHoorSize;
@@ -136,7 +142,35 @@ public:
 				
 			}
 		}
-		
+	
+		// Set-up alpha generator
+		if (param.alphaValue.compare(std::string("R")) == 0) {
+			// do somehting for reactive alpha
+			std::cout << "Reactive Alpha" << std::endl;
+
+		} else if (param.alphaValue.compare(std::string("E")) == 0) {
+			// do something for uniform random alpha
+			std::cout << "Random Alpha" << std::endl;
+			
+		} else {
+			
+			// See if a valid alpha has been provided to the function
+			// check for double, this code comes from Stack OVerflow:
+			// http://stackoverflow.com/questions/2065392/c-test-if-input-is-an-double-char
+			std::istringstream ss(param.alphaValue);
+			double d;
+			bool isDouble = (ss >> d) && (ss >> std::ws).eof();
+			
+			if(isDouble && d >= 0 && d <= 1) {
+				alpha = new GRASP_FixedAlpha(d);
+			} else {
+				
+				// no double value or anything els known
+				std::cout << "Error: No alpha generator provided or incorrect alpha value." << std::endl;
+				throw;
+			}
+		}
+	
 	}
 	
 	// Method dummy which is should be overloaded by neighborhood-specific setter functions
@@ -159,13 +193,22 @@ public:
 		// initialize stopping criterion
 		cont->init(*p);
 		
+		// initialize alpha generator
+		alpha->init();
+		double tmp = 0; //DEBUG
+
 		// start timer
 		t = clock();
 		
 		// start calculating until stopping criterion is met
 		do
 		{
-			val = GRASPIteration(0.2);
+			//DEBUG
+			tmp = alpha->operator ()();
+			std::cout << tmp << std::endl;
+			val = GRASPIteration(tmp);
+			
+			//val = GRASPIteration(alpha->operator ()());
 			if (val < bestVal) {
 				bestVal = val;
 			}
@@ -195,6 +238,8 @@ public:
 	// this implementation uses both the target value and the number of iterations
 	// this function has also verbose timing output
 	void RunTimeToTarget(int Iterations) {
+		
+		// FIXME: ALPHA!
 		
 		// initialize result values
 		double bestVal = std::numeric_limits<double>::max();

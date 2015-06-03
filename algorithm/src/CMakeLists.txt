@@ -20,6 +20,7 @@ set (SMP2_SOURCES
 		SMP2_GRASP_Algo.h
 
 		GRASP_Alpha.h
+		GRASP_FixedAlpha.cpp
 		)
 				
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
