@@ -6,15 +6,20 @@ set (SMP2_SOURCES
 		SMP2_Eval.h
 		SMP2_GreedyInit.cpp
 		
+		
 		SMP2_ElementFlip_Neighbor.cpp
 		SMP2_ElementFlip_IncrEval.h
 		
-		SMP2_AdjElementFlipIndex_Neighbor.cpp
 		SMP2_AdjElementFlip_Neighborhood.cpp
+		SMP2_AdjElementFlipIndex_Neighbor.cpp
 		
 		SMP2_ElementFlipIndex_Neighbor.cpp
 		
 		SMP2_CLI.h
+		
+		SMP2_GRASP_Algo.h
+		
+		SMP2_GRASP_abstract.h
 		)
 				
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
