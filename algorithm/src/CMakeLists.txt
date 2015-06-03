@@ -4,7 +4,6 @@ include_directories(${CMAKE_SOURCE_DIR}/src)
 set (SMP2_SOURCES
 		SMP2.cpp
 		SMP2_Eval.h
-		SMP2_GreedyInit.cpp
 		
 		
 		SMP2_ElementFlip_Neighbor.cpp
@@ -16,10 +15,11 @@ set (SMP2_SOURCES
 		SMP2_ElementFlipIndex_Neighbor.cpp
 		
 		SMP2_CLI.h
-		
-		SMP2_GRASP_Algo.h
-		
+
 		SMP2_GRASP_abstract.h
+		SMP2_GRASP_Algo.h
+
+		GRASP_Alpha.h
 		)
 				
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
