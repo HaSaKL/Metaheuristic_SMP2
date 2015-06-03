@@ -11,7 +11,6 @@ private:
 	
 public:
 	GRASP_FixedAlpha(double _alpha);
-	void init(double _alpha);
 	void init();
 	double operator() ();
 };

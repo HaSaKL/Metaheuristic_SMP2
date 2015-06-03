@@ -30,6 +30,7 @@
 
 // possible alpha generators
 #include "GRASP_FixedAlpha.h"
+#include "GRASP_UniformRandomAlpha.h"
 
 // time measurements
 #include <time.h>
@@ -149,8 +150,9 @@ public:
 			std::cout << "Reactive Alpha" << std::endl;
 
 		} else if (param.alphaValue.compare(std::string("E")) == 0) {
-			// do something for uniform random alpha
-			std::cout << "Random Alpha" << std::endl;
+			// FIXME: Max, Min and Step values could be parameterized
+			alpha = new GRASP_UniformRandomAlpha(1,0,10);
+	
 			
 		} else {
 			

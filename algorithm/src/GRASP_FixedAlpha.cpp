@@ -2,10 +2,6 @@
 
 // Set the alpha value depending on the provided parameter
 GRASP_FixedAlpha::GRASP_FixedAlpha(double _alpha) {
-	init(_alpha);
-}
-
-void GRASP_FixedAlpha::init(double _alpha) {
 	alpha = _alpha;
 }
 

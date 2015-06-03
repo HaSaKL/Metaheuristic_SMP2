@@ -7,7 +7,6 @@ class GRASP_Alpha
 public:
 	virtual double operator() ()= 0;
 	virtual void init() = 0;
-	virtual void init(double)  = 0;
 };
 
 #endif // GRASP_ALPHA_H
