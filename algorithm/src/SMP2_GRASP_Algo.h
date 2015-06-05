@@ -236,9 +236,7 @@ public:
 	// this implementation uses both the target value and the number of iterations
 	// this function has also verbose timing output
 	void RunTimeToTarget(int Iterations) {
-		
-		// FIXME: ALPHA!
-		
+	
 		// initialize result values
 		double bestVal = std::numeric_limits<double>::max();
 		double val = 0;
@@ -255,7 +253,16 @@ public:
 		if (param.targetValue < std::numeric_limits<double>::max()) {
 			delete cont;
 			cont = new moFitContinuator<Neighbor>(param.targetValue);
-		} else { throw; }
+		} else { 
+			std::cout << "Please specify a target value if you want to run time-to-target." << std::endl;
+			throw; 
+		}
+		
+		// check if a number of iterations was set as well
+		if (param.maxIterations <= 0) {
+			std::cout << "Please specify the number of iterations you want to run time-to-target." << std::endl;
+			throw;
+		}
 		
 		// repeat for a given number of iterations
 		for (int i = 0; i < param.maxIterations; i++) {
@@ -264,14 +271,18 @@ public:
 			bestVal = std::numeric_limits<double>::max();
 			p->RandomInit();
 			
+			// intitialize continuator
+			cont->init(*p);
+			
+			// initialize alpha-generator
+			alpha->init(*p);
+			
 			// start clock
 			t = clock();
 			
-			// intitialize continuator
-			cont->init(*p);
 			do
 			{
-				val = GRASPIteration(0.2);
+				val = GRASPIteration(alpha->operator ()(*p));
 				if (val < bestVal) {
 					bestVal = val;
 				}
@@ -284,7 +295,6 @@ public:
 			// print result
 			std::cout << i << "; " << timeToTarget << std::endl;
 		}
-		std::cout << bestVal << std::endl;
 	}
 	
 	// a single GRASP Iteration consists of GreedyIntialization with alpha and of local search
