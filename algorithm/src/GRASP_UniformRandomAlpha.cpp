@@ -12,9 +12,9 @@ GRASP_UniformRandomAlpha::GRASP_UniformRandomAlpha(double _maxAlpha, double _min
 	}
 }
 
-void GRASP_UniformRandomAlpha::init() {
+void GRASP_UniformRandomAlpha::init(SMP2 & _p) {
 }
 
-double GRASP_UniformRandomAlpha::operator ()() {
+double GRASP_UniformRandomAlpha::operator ()(SMP2 & _p) {
 	return minAlpha + rng.random(numAlpha) * stepAlpha;
 }

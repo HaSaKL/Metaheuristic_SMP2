@@ -3,6 +3,7 @@
 
 #include "GRASP_Alpha.h"
 #include <utils/eoRNG.h> // for random numbers
+#include "SMP2.h"
 
 // Class which returns a random alpha value
 class GRASP_UniformRandomAlpha: public GRASP_Alpha
@@ -14,8 +15,8 @@ private:
 	
 public:
 	GRASP_UniformRandomAlpha(double _maxAlpha, double _minAlpha, int _numAlpha);
-	void init();
-	double operator() ();
+	void init(SMP2 & _p);
+	double operator() (SMP2 & _p);
 
 };
 

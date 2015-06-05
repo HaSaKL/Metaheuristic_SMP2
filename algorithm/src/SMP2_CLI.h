@@ -108,7 +108,7 @@ inline void parseFile(eoParser & parser, parameters & param) {
 		).value();
 		
 	param.alphaValue = parser.createParam(
-		std::string("0.2"),
+		std::string("R"),
 		"alphaValue",
 		"Type of Greedy Construction Phase",
 		'a',

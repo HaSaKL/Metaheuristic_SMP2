@@ -38,7 +38,7 @@ void main_function(int argc, char* argv[]) {
 	rng.reseed(param.seed);
 	
 	// Create a problem instance and load problem data
-	std::cout << "Loading Problem " << param.problemFile << "...";
+	std::cout << "Loading Problem " << param.problemFile << "... ";
 	SMP2 p(param.problemFile);
 	std::cout << "done." << std::endl;
 	

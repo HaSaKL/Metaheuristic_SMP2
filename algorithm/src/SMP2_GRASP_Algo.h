@@ -31,6 +31,7 @@
 // possible alpha generators
 #include "GRASP_FixedAlpha.h"
 #include "GRASP_UniformRandomAlpha.h"
+#include "GRASP_ReactiveAlpha.h"
 
 // time measurements
 #include <time.h>
@@ -146,11 +147,11 @@ public:
 	
 		// Set-up alpha generator
 		if (param.alphaValue.compare(std::string("R")) == 0) {
-			// do somehting for reactive alpha
-			std::cout << "Reactive Alpha" << std::endl;
+			// FIXME: Max, Min and Num values could be parameterized
+			alpha = new GRASP_ReactiveAlpha(*p,1,0,10,100);
 
 		} else if (param.alphaValue.compare(std::string("E")) == 0) {
-			// FIXME: Max, Min and Step values could be parameterized
+			// FIXME: Max, Min and Num values could be parameterized
 			alpha = new GRASP_UniformRandomAlpha(1,0,10);
 	
 			
@@ -196,8 +197,7 @@ public:
 		cont->init(*p);
 		
 		// initialize alpha generator
-		alpha->init();
-		double tmp = 0; //DEBUG
+		alpha->init(*p);
 
 		// start timer
 		t = clock();
@@ -205,12 +205,8 @@ public:
 		// start calculating until stopping criterion is met
 		do
 		{
-			//DEBUG
-			tmp = alpha->operator ()();
-			std::cout << tmp << std::endl;
-			val = GRASPIteration(tmp);
+			val = GRASPIteration(alpha->operator ()(*p));
 			
-			//val = GRASPIteration(alpha->operator ()());
 			if (val < bestVal) {
 				bestVal = val;
 			}
@@ -300,7 +296,7 @@ public:
 		
 		// do the local search
 		ls->operator()(*p);
-
+	
 		return p->fitness();
 	}
 	
