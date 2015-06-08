@@ -235,11 +235,16 @@ public:
 	// thie realized a specific time-to-target run where the time is measured for each time-to-targe iteraion
 	// this implementation uses both the target value and the number of iterations
 	// this function has also verbose timing output
-	void RunTimeToTarget(int Iterations) {
+	void RunTimeToTarget() {
 	
 		// initialize result values
 		double bestVal = std::numeric_limits<double>::max();
 		double val = 0;
+		
+		// open outputfile for writing
+		// initialize output (append to file)
+		std::ofstream outputFile;
+		outputFile.open(param.outputFile.c_str(),std::ios::app);
 		
 		// initialize timer
 		clock_t t;
@@ -247,6 +252,10 @@ public:
 		
 		// print output header
 		std::cout << "Iteration; Time" << std::endl;
+		
+		// print file output header if file is empty
+		if(outputFile.tellp() == 0)
+			outputFile << "Problem; Neighborhood; Algorithm; AlphaValue; Time" << std::endl;
 		
 		// explicitly delete the current continuator, in case it has been set to something
 		// else then a target value; check first if a target value has been defined
@@ -294,7 +303,13 @@ public:
 			
 			// print result
 			std::cout << i << "; " << timeToTarget << std::endl;
+			
+			// write result to file
+			outputFile << param.problemFile << "; " << param.neighborhood << "; " << param.localSearchAlgo << "; " << param.alphaValue << "; " << timeToTarget << std::endl;
 		}
+		
+		//close output file
+		outputFile.close();
 	}
 	
 	// a single GRASP Iteration consists of GreedyIntialization with alpha and of local search

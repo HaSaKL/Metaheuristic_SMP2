@@ -60,6 +60,7 @@ void main_function(int argc, char* argv[]) {
 	// Run the algorithm
 	Algo->Run(Sol, Time);
 	
+	std::cout.precision( std::numeric_limits<double>::digits10 + 1);
 	std::cout << "Time: " << Time << "; Sol: " << Sol << std::endl;
 }
 
