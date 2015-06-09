@@ -55,7 +55,7 @@ void main_function(int argc, char* argv[]) {
 		std::cout << "No target value provided. Trying to find one using defined or default algorithm." << std::endl;
 		
 		// set parameters for long run
-		param.maxRuntime = 1;
+		param.maxRuntime = 300;
 		param.stoppingCriterion = 'T';
 		
 		// Define the Algorithm on the basis of the choosen Neighborhood

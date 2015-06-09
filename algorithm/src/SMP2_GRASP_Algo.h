@@ -158,7 +158,7 @@ public:
 		} else {
 			
 			// See if a valid alpha has been provided to the function
-			// check for double, this code comes from Stack OVerflow:
+			// check for double, this code comes from Stack Overflow:
 			// http://stackoverflow.com/questions/2065392/c-test-if-input-is-an-double-char
 			std::istringstream ss(param.alphaValue);
 			double d;
