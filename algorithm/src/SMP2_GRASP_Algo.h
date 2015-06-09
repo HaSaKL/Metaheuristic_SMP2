@@ -119,14 +119,15 @@ public:
 				std::cout << "Error: No target Vaule provided." << std::endl;
 				throw;
 			}
-			cont = new moFitContinuator<Neighbor>(param.targetValue);
+			cont = new moFitContinuator<Neighbor>(param.targetValue + pow(10,-6)); // add a small epsilon to compensate float-round-offs during increEvals
+	
 		
 		} else {
 			// If Continuator is not specified explicitly, was it specified implicit?
 			
 			// has target value been set?
 			if(param.targetValue < std::numeric_limits<double>::max()) {
-				cont = new moFitContinuator<Neighbor>(param.targetValue);
+				cont = new moFitContinuator<Neighbor>(param.targetValue + pow(10,-6)); // add a small epsilon to compensate float-round-offs during increEvals
 			}
 			
 			// has iteration number been set?
@@ -261,7 +262,7 @@ public:
 		// else then a target value; check first if a target value has been defined
 		if (param.targetValue < std::numeric_limits<double>::max()) {
 			delete cont;
-			cont = new moFitContinuator<Neighbor>(param.targetValue);
+			cont = new moFitContinuator<Neighbor>(param.targetValue + pow(10,-6)); // add a small epsilon to compensate float-round-offs during increEvals 
 		} else { 
 			std::cout << "Please specify a target value if you want to run time-to-target." << std::endl;
 			throw; 
@@ -277,13 +278,13 @@ public:
 		for (int i = 0; i < param.maxIterations; i++) {
 			
 			// Reset last result, so the current solution value is not optimal
-			bestVal = std::numeric_limits<double>::max();
 			p->RandomInit();
+			fullEval(*p);
 			
-			// intitialize continuator
+			// (re-)intitialize continuator
 			cont->init(*p);
 			
-			// initialize alpha-generator
+			// (re-)initialize alpha-generator
 			alpha->init(*p);
 			
 			// start clock
@@ -292,9 +293,6 @@ public:
 			do
 			{
 				val = GRASPIteration(alpha->operator ()(*p));
-				if (val < bestVal) {
-					bestVal = val;
-				}
 			} while(cont->operator()(*p)); // repeat until target value is met
 			
 			// after target solution was found, calculate elapsed time

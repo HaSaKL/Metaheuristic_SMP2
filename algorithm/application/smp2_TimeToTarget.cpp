@@ -83,15 +83,14 @@ void main_function(int argc, char* argv[]) {
 		// the values can differ stong from run to run for optimal solutions (e.g. 22.3716793 vs. 22.37167929999999 vs. 22.37167929999992)
 		// this can only be solved using some form of rounding up to a number of precision digits
 		// c++' rounding functions (floor, round, ceil) do not provide an precission information -> this needs to be done the hard way
-		// with multiplication and devision
-		// precision is set to 6 digits afer the point (standard display precision)
-		int numOfPrecisions = 6;
-		int tmp = pow(10, numOfPrecisions);
-		//param.targetValue = (int)(Sol * tmp + 0.5) / (double)tmp;
-		param.targetValue = ceil(tmp * Sol) / tmp;
+		// precision is set to 6 digits afer the point during all initializations of the alogirhm (in the SMP2_GRASP_Alog construtor and in the
+		// SMP2_GRASP_Algo::RunTimeToTarget() method.
+		
+		// save parameter
+		param.targetValue = Sol;
 		std::cout << "Using:" << param.targetValue << std::endl;
 		
-		// delete Algorithm
+		// delete Algorithm --> construct a new, right one with a target value in the next steps
 		delete Algo;
 	}
 	
@@ -113,7 +112,7 @@ void main_function(int argc, char* argv[]) {
 	
 	
 	// Run time-to-target coputation
-	std::cout << "Running time to target with target value : " << param.targetValue << std::endl;
+	std::cout << "Running time to target with target value : " << param.targetValue + pow(10,-6) << std::endl;
 	Algo->RunTimeToTarget();
 }
 
