@@ -241,6 +241,7 @@ public:
 		// initialize result values
 		double bestVal = std::numeric_limits<double>::max();
 		double val = 0;
+		int itCounter = 0; // Add an iteration counter
 		
 		// open outputfile for writing
 		// initialize output (append to file)
@@ -256,7 +257,7 @@ public:
 		
 		// print file output header if file is empty
 		if(outputFile.tellp() == 0)
-			outputFile << "Problem; Neighborhood; Algorithm; AlphaValue; Time" << std::endl;
+			outputFile << "Problem; Neighborhood; Algorithm; AlphaValue; Time; Iterations" << std::endl;
 		
 		// explicitly delete the current continuator, in case it has been set to something
 		// else then a target value; check first if a target value has been defined
@@ -287,12 +288,15 @@ public:
 			// (re-)initialize alpha-generator
 			alpha->init(*p);
 			
+			itCounter = 0;
+			
 			// start clock
 			t = clock();
 			
 			do
 			{
 				val = GRASPIteration(alpha->operator ()(*p));
+				itCounter++;
 			} while(cont->operator()(*p)); // repeat until target value is met
 			
 			// after target solution was found, calculate elapsed time
@@ -300,10 +304,10 @@ public:
 			timeToTarget = double(t) / (CLOCKS_PER_SEC);
 			
 			// print result
-			std::cout << i << "; " << timeToTarget << std::endl;
+			std::cout << i << " ; \t " << timeToTarget << " seconds ; \t " << itCounter << " iterations"<< std::endl;
 			
 			// write result to file
-			outputFile << param.problemFile << "; " << param.neighborhood << "; " << param.localSearchAlgo << "; " << param.alphaValue << "; " << timeToTarget << std::endl;
+			outputFile << param.problemFile << "; " << param.neighborhood << "; " << param.localSearchAlgo << "; " << param.alphaValue << "; " << timeToTarget << "; " << itCounter << std::endl;
 		}
 		
 		//close output file
