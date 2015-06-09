@@ -301,10 +301,10 @@ public:
 			
 			// after target solution was found, calculate elapsed time
 			t = clock() - t;
-			timeToTarget = double(t) / (CLOCKS_PER_SEC);
+			timeToTarget = double(t) * 1000 / (CLOCKS_PER_SEC);
 			
 			// print result
-			std::cout << i << " ; \t " << timeToTarget << " seconds ; \t " << itCounter << " iterations"<< std::endl;
+			std::cout << i << " ; \t " << timeToTarget << " ms ; \t " << itCounter << " iterations"<< std::endl;
 			
 			// write result to file
 			outputFile << param.problemFile << "; " << param.neighborhood << "; " << param.localSearchAlgo << "; " << param.alphaValue << "; " << timeToTarget << "; " << itCounter << std::endl;
