@@ -23,6 +23,8 @@ set (SMP2_SOURCES
 		GRASP_FixedAlpha.cpp
 		GRASP_UniformRandomAlpha.cpp
 		GRASP_ReactiveAlpha.cpp
+		
+		ProblemGenerator.h
 		)
 				
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)

@@ -16,3 +16,7 @@ target_link_libraries(SMP2_test lSMP2)
 add_executable(SMP2_flipnh_test smp2_flipnh_test.cpp)
 target_link_libraries(SMP2_flipnh_test ${PARADISEO_LIBRARIES})
 target_link_libraries(SMP2_flipnh_test lSMP2)
+
+add_executable(SMP2_problemGen smp2_problemGenerator.cpp)
+target_link_libraries(SMP2_problemGen lSMP2)
+target_link_libraries(SMP2_problemGen ${PARADISEO_LIBRARIES})
