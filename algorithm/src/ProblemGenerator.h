@@ -247,7 +247,7 @@ void GenerateProblem(std::string ProblemName,
 	
 	// write intramodular cost class cost
 	for (int i = 0; i < IntraModularCost.size(); i++) {
-		outputFile << InterModularCost[i] << " ";
+		outputFile << IntraModularCost[i] << " ";
 	}
 	outputFile << std::endl << std::endl;
 	
