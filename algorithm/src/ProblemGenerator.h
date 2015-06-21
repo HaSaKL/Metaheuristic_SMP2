@@ -13,7 +13,7 @@ void GenerateProblem(std::string ProblemName,
 						int PathNum, 
 						int InterModularNum, double BaseInterModularCost, double GrowInterModularCost,
 						int IntraModularNum, double BaseIntraModularCost, double GrowIntraModularCost) {
-	
+							
 	// Assert Module Num  --> see that the number of modules is larger then the number of tasks devided by the maximum legal module size
 	if (ModuleNum <= DSM_size / (IntraModularNum-1) ) {
 		std::cout << "Please choose a larger number of Modules. The minimum number of modules for this problem is: " << 1 + (int)DSM_size / (IntraModularNum-1) << std::endl;
@@ -181,6 +181,7 @@ void GenerateProblem(std::string ProblemName,
 	
 	// initialize output
 	std::ofstream outputFile;
+	std::cout << ProblemName.c_str() << std::endl;
 	outputFile.open(ProblemName.c_str());
 	
 	
