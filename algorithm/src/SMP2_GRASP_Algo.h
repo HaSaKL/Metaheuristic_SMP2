@@ -9,10 +9,12 @@
 // neighborhoor definitions
 #include <neighborhood/moOrderNeighborhood.h>
 #include <neighborhood/moRndWithoutReplNeighborhood.h>
+#include <neighborhood/moDummyNeighborhood.h>
 
 // possible LS-Algorithms
 #include <algo/moSimpleHC.h>
 #include <algo/moFirstImprHC.h>
+#include <algo/moDummyLS.h>
 
 // possible problem-specific incremental evaluation functions
 #include "SMP2_ElementFlip_IncrEval.h"
@@ -95,7 +97,12 @@ public:
 			//For the first Improvement
 			nh = new moRndWithoutReplNeighborhood<Neighbor>(NeighborHoorSize);
 			ls = new moFirstImprHC<Neighbor>(*nh, fullEval, *incrEval);
-			
+		
+		} else if (param.localSearchAlgo == '0') {
+			// For supressed local search (just Greedy-Start)
+			//nh = new moDummyNeighborhood<Neighbor>;
+			ls = new moDummyLS<Neighbor>(fullEval);
+		
 		} else {
 			std::cout << "Error: Unknown Local Search Alogorithms: " << param.localSearchAlgo << std::endl;
 			throw;
