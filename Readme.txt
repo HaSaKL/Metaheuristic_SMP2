@@ -1,3 +1,6 @@
+This project contains all source files and tests for the essay "FIXME"
+by Hans Corsten and Hagen Salewski
+
 The folder "algorithm" holds all source codes to compile a couple of GRASP-based applications which can solve the Simulaneous Multi-Path Service Modularisation Problem (SMP)²
 
 To compile, you need to have version 2.0.1 of ParadisEO (http://paradiseo.gforge.inria.fr/index.php?n=Doc.Install) and all it requirements installed. Then:
