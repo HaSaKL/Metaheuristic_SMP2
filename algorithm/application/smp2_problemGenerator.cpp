@@ -37,29 +37,34 @@ int main(int argc, char* argv[]) {
 	PathNum = 16;
 	InterClassNum = 10;
 	
-	for (DSM_size = 10; DSM_size < 101; DSM_size = DSM_size + 10) {
-		
-		oss.str("");
-		oss << DSM_size;
-		
-		Filename = std::string("size_test/KH_size");
-		Filename.append(oss.str());
-		Filename.append(".dat");
+	for (DSM_size = 13; DSM_size < 32; DSM_size = DSM_size + 2) {
 		
 		MaxModuleSize = ceil ( (3 * DSM_size) / 10 );	// this is the formular described above solved for MaxModuleSize
 		
-		GenerateProblem(Filename, DSM_size, DSM_MaxVal, DSM_density, ModuleNum, PathNum, InterClassNum, 2, 1.1, MaxModuleSize + 1, 0.75, 2);
+		// make more than one random problem per density, to get a better variation of times...
+		for (int i = 1; i < 11; i++) {
+			
+			Filename = std::string("size_test/KH_size");
+			
+			oss.str("");
+			oss << DSM_size << "-" << i;
+			
+			Filename.append(oss.str());
+			Filename.append(".dat");
+			
+			GenerateProblem(Filename, DSM_size, DSM_MaxVal, DSM_density, ModuleNum, PathNum, InterClassNum, 2, 1.1, MaxModuleSize + 1, 0.75, 2);
+		}
 	}
 	
 	
 	
-	// make problems with different densities - fix rest
+	// make problems with different densities
 	std::cout << "Making Problems with different densities ... " << std::endl;
 	rng.reseed(seed);
 	
 	system("mkdir density_test");
 	
-	DSM_size = 20;
+	DSM_size = 13;
 	DSM_MaxVal = 6;
 	ModuleNum = 10;
 	PathNum = 16;
@@ -67,18 +72,22 @@ int main(int argc, char* argv[]) {
 	PathNum = 16;
 	InterClassNum = 10;
 	
-	for (DSM_density = 0.1; DSM_density < 1.01; DSM_density = DSM_density + 0.1) {
+	for (DSM_density = 0.1; DSM_density < 1; DSM_density = DSM_density + 0.1) {
 		
-		oss.str("");
-		oss << "0" << DSM_density*100;
-		
-		Filename = std::string("density_test/KH_density");
-		Filename.append(oss.str());
-		Filename.append(".dat");
-		
-		GenerateProblem(Filename, DSM_size, DSM_MaxVal, DSM_density, ModuleNum, PathNum, InterClassNum, 2, 1.1, MaxModuleSize + 1, 0.75, 2);
+		// make more than one random problem per density, to get a better variation of times...
+		for (int i = 1; i < 11; i++) {
+			
+			Filename = std::string("density_test/KH_density");
+			
+			oss.str("");
+			oss << "0" << DSM_density*100 << "-" << i;
+			
+			Filename.append(oss.str());
+			Filename.append(".dat");
+			
+			GenerateProblem(Filename, DSM_size, DSM_MaxVal, DSM_density, ModuleNum, PathNum, InterClassNum, 2, 1.1, MaxModuleSize + 1, 0.75, 2);
+		}
 	}
-	
 	
 	
 	// make problems with different paths - fix rest
@@ -86,24 +95,30 @@ int main(int argc, char* argv[]) {
 	rng.reseed(seed);
 	system("mkdir path_test");
 	
-	DSM_size = 20;
+	DSM_size = 13;
 	DSM_MaxVal = 6;
-	DSM_density = 0.69;
+	DSM_density = 0.50;
 	ModuleNum = 10;
 	MaxModuleSize = 6;	
 	PathNum = 16;
 	InterClassNum = 10;
 	
-	for (PathNum = 2; PathNum < 1025; PathNum = PathNum * 2) {
+	for (PathNum = 16; PathNum < 1025; PathNum = PathNum * 2) {
 		
-		oss.str("");
-		oss << PathNum;
+		// make more than one random problem per density, to get a better variation of times...
+		for (int i = 1; i < 11; i++) {
 		
-		Filename = std::string("path_test/KH_path");
-		Filename.append(oss.str());
-		Filename.append(".dat");
+			Filename = std::string("path_test/KH_path");
+			
+			oss.str("");
+			oss << PathNum << "-" << i;
+			
+			Filename.append(oss.str());
+			Filename.append(".dat");
+			
+			GenerateProblem(Filename, DSM_size, DSM_MaxVal, DSM_density, ModuleNum, PathNum, InterClassNum, 2, 1.1, MaxModuleSize + 1, 0.75, 2);
 		
-		GenerateProblem(Filename, DSM_size, DSM_MaxVal, DSM_density, ModuleNum, PathNum, InterClassNum, 2, 1.1, MaxModuleSize + 1, 0.75, 2);
+		}
 	}
 	
 	
@@ -113,24 +128,29 @@ int main(int argc, char* argv[]) {
 	
 	system("mkdir moduleSize_test");
 	
-	DSM_size = 20;
+	DSM_size = 13;
 	DSM_MaxVal = 6;
-	DSM_density = 0.69;
+	DSM_density = 0.5;
 	ModuleNum = 10;
 	MaxModuleSize = 6;	
 	PathNum = 16;
 	InterClassNum = 10;
 	
-	for (MaxModuleSize = 3; MaxModuleSize < 21; MaxModuleSize = MaxModuleSize + 2) {
+	for (MaxModuleSize = 3; MaxModuleSize < 13; MaxModuleSize = MaxModuleSize + 1) {
 		
-		oss.str("");
-		oss << MaxModuleSize;
-		
-		Filename = std::string("moduleSize_test/KH_moduleSize");
-		Filename.append(oss.str());
-		Filename.append(".dat");
-		
-		GenerateProblem(Filename, DSM_size, DSM_MaxVal, DSM_density, ModuleNum, PathNum, InterClassNum, 2, 1.1, MaxModuleSize + 1, 0.75, 2);
+		// make more than one random problem per density, to get a better variation of times...
+		for (int i = 1; i < 11; i++) {
+			
+			Filename = std::string("moduleSize_test/KH_moduleSize");
+			
+			oss.str("");
+			oss << MaxModuleSize << "-" << i;
+			
+			Filename.append(oss.str());
+			Filename.append(".dat");
+			
+			GenerateProblem(Filename, DSM_size, DSM_MaxVal, DSM_density, ModuleNum, PathNum, InterClassNum, 2, 1.1, MaxModuleSize + 1, 0.75, 2);
+		}
 	}
 	
 	
@@ -141,9 +161,9 @@ int main(int argc, char* argv[]) {
 	
 	system("mkdir intermodular_test");
 	
-	DSM_size = 20;
+	DSM_size = 13;
 	DSM_MaxVal = 6;
-	DSM_density = 0.69;
+	DSM_density = 0.5;
 	ModuleNum = 10;
 	MaxModuleSize = 6;	
 	PathNum = 16;
@@ -151,18 +171,20 @@ int main(int argc, char* argv[]) {
 	
 	for (InterClassNum = 5; InterClassNum < 50 + 1; InterClassNum = InterClassNum + 5) {
 		
-		oss.str("");
-		oss << InterClassNum;
-		
-		Filename = std::string("intermodular_test/KH_intermodular");
-		Filename.append(oss.str());
-		Filename.append(".dat");
-		
-		GenerateProblem(Filename, DSM_size, DSM_MaxVal, DSM_density, ModuleNum, PathNum, InterClassNum, 2, 1.1, MaxModuleSize + 1, 0.75, 2);
+		// make more than one random problem per density, to get a better variation of times...
+		for (int i = 1; i < 11; i++) {
+			
+			Filename = std::string("intermodular_test/KH_intermodular");
+			
+			oss.str("");
+			oss << InterClassNum << "-" << i;
+			
+			Filename.append(oss.str());
+			Filename.append(".dat");
+			
+			GenerateProblem(Filename, DSM_size, DSM_MaxVal, DSM_density, ModuleNum, PathNum, InterClassNum, 2, 1.1, MaxModuleSize + 1, 0.75, 2);
+		}
 	}
 	
 
-	// make one with same structure as Test16-13-7.dat
-	// rng.reseed(seed);
-	// GenerateProblem(std::string("Test.dat"), 13, 6, 0.69, 7, 16, 10, 1, 1.1, 6, 0.75, 2);
 }
