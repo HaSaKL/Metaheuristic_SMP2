@@ -1,4 +1,4 @@
-This project contains all source files and tests for the essay "FIXME"
+This project contains all source files and tests for the essay "Untersuchung zur Leistungsfähigkeit optimierender und heuristischer Verfahren der Dienstleistungsmo-dularisierung"
 by Hans Corsten and Hagen Salewski
 
 The folder "algorithm" holds all source codes to compile a couple of GRASP-based applications which can solve the Simulaneous Multi-Path Service Modularisation Problem (SMP)²
@@ -23,8 +23,8 @@ There are some test applications and some productive applications. For the tests
 	max runtime in seconds	(-T=3600 for running for 1 hour and set best result as target value - only important if no target value is proviede)
 
 
-The folder "tests" is self contained and holds all tests, compiled SMP2_TimeToTarget, R-Scripts and Bash-Scrips required to run the tests. In each test-subfolder you can run the tests by:
-executing the Bash script "Run.sh"
+The folder "tests" is self contained and holds all tests, compiled SMP2_TimeToTarget, R-Scripts and Bash-Scrips required to run the tests. In each test-subfolder you can run the tests by executing the Bash script "Run.sh":
+./Run.sh
 
 
 For question please contact the author:
