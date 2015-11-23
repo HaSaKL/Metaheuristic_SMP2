@@ -686,7 +686,7 @@ void SMP2::GRASPAddAssignment(std::vector<RCL_element> & _rcl, double alpha) {
 	// FIXME: This could be realized by std::upper_bound, but it needs a custom operator> for this!!! This was the lazy way out
 	int i = 0;
 	while (i < _rcl.size()){
-		if (_rcl[i].first >+ maxRCLCost) {
+		if (_rcl[i].first >= maxRCLCost) {
 			break;
 		} else {
 			i++;
@@ -695,7 +695,7 @@ void SMP2::GRASPAddAssignment(std::vector<RCL_element> & _rcl, double alpha) {
 	
 	
 	// chose an assignment from the restricted list (RCL.begin() to RCL.begin()+i)
-	int idxRCL = rng.random(i); // only draw from [0,i), b/c i's maximum is _rcl.size() which is already one above the last container in the vector
+	int idxRCL = rng.random(i+1); // only draw from [0,i), b/c i's maximum is _rcl.size() which is already one above the last container in the vector
 	int cTask = _rcl[idxRCL].second.first;
 	int cModule = _rcl[idxRCL].second.second;
 	
