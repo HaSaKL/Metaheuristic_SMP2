@@ -37,7 +37,7 @@ void GRASP_ReactiveAlpha::init(SMP2 & _p) {
 	currentIteration = 0;
 	
 	// Reset the starting probabilities
-	std::fill(AlphaProbs.begin(), AlphaProbs.end(), 0.1);
+	std::fill(AlphaProbs.begin(), AlphaProbs.end(), 1 / double(numAlpha) );
 	
 	// Reset the current quality parameter for each alpha
 	std::fill(AlphaQuality.begin(), AlphaQuality.end(), 1);
