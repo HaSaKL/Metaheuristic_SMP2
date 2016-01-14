@@ -54,7 +54,7 @@ png("Neighborhood_vs_Algorithm_vs_Alpha.png",
 )
 ggplot(gr_data, aes(Time + 0.1, color = AlphaValue, linetype = AlphaValue)) + 
     stat_ecdf(geom='line') + 
-    #geom_hline(y=1) + xlim(0,750) +
+    geom_hline(yintercept = 1) + xlim(0,750) +
     facet_grid(Algorithm ~ Neighborhood, labeller = label_both) +
     ylab("ECDF") +
     xlab("Runtime")
