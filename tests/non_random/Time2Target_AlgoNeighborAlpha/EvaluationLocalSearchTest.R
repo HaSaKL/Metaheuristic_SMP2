@@ -17,7 +17,7 @@ data$AlphaValue <- factor(data$AlphaValue,
                                      "alpha = 0.6",
                                      "purely random",
                                      "uniform random alpha",
-                                     "Reactive GRASP"
+                                     "reactive GRASP"
                                      )
                           )
 
@@ -140,6 +140,8 @@ dev.off()
 
 graphdata_small = filter(gr_data, Algorithm == "First improvement", Neighborhood == "Element flip")
 
+names(graphdata_small)[names(graphdata_small) == "AlphaValue"] <- "Construction heuristic"
+
 png("Runtime_vs_Construction_Method.png",
     width = 16,
     height = 7,
@@ -150,9 +152,9 @@ png("Runtime_vs_Construction_Method.png",
     antialias = "cleartype"
 )
 
-ggplot(graphdata_small, aes(Time + 0.1, linetype = AlphaValue, color = AlphaValue)) +
+ggplot(graphdata_small, aes(Time + 0.1, linetype = `Construction heuristic`, color = `Construction heuristic`)) +
   stat_ecdf(geom='line') +
-  scale_color_grey(start=0.4, end=0) +
+  scale_color_grey(start=0.8, end=0) +
   geom_hline(yintercept = 1) +
   xlim(0,750) +
   xlab("Runtime in msec") +
