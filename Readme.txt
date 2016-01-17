@@ -1,5 +1,5 @@
-This project contains all source files and tests for the essay "Untersuchung zur Leistungsfähigkeit optimierender und heuristischer Verfahren der Dienstleistungsmo-dularisierung"
-by Hans Corsten and Hagen Salewski
+﻿This project contains all source files and tests for the essay "Solving Facility Location Problems and Service Modularization Problems using Greedy Adaptive Randomized Search Procedures" for the 19th International Working Seminar on Production Economics (2016)
+by Hagen Salewski
 
 The folder "algorithm" holds all source codes to compile a couple of GRASP-based applications which can solve the Simulaneous Multi-Path Service Modularisation Problem (SMP)²
 

@@ -42,6 +42,8 @@ smry <- summarise(gr_data,
 
 library(ggplot2)
 
+names(gr_data)[names(gr_data) == "AlphaValue"] <- "Construction heuristic"
+
 ## exploratroy drawing of Time-To-Target Plots to find out good parameter combinations
 png("Neighborhood_vs_Algorithm_vs_Alpha.png",
     width = 20,
@@ -52,7 +54,7 @@ png("Neighborhood_vs_Algorithm_vs_Alpha.png",
     family = "serif",
     antialias = "cleartype"
 )
-ggplot(gr_data, aes(Time + 0.1, color = AlphaValue, linetype = AlphaValue)) + 
+ggplot(gr_data, aes(Time + 0.1, color = `Construction heuristic`, linetype = `Construction heuristic`)) + 
     stat_ecdf(geom='line') + 
     geom_hline(yintercept = 1) + xlim(0,750) +
     facet_grid(Algorithm ~ Neighborhood, labeller = label_both) +
@@ -60,6 +62,8 @@ ggplot(gr_data, aes(Time + 0.1, color = AlphaValue, linetype = AlphaValue)) +
     xlab("Runtime")
     
 dev.off()
+
+names(gr_data)[names(gr_data) == "Construction heuristic"] <- "AlphaValue"
 
 ## filter the relevant data points
 graph_data1 <- filter(gr_data, Algorithm == "Best improvement", Neighborhood == "Adjacent element flip", AlphaValue == "alpha = 0.1")
@@ -105,10 +109,10 @@ dev.off()
 
 png("ECDF_Neighborhood_Algorithm_eng.png",
     width = 16,
-    height = 7,
+    height = 5.5,
     units = "cm",
     res = 1200,
-    pointsize = 12,
+    pointsize = 10,
     family = "serif",
     antialias = "cleartype"
 )
@@ -121,12 +125,12 @@ ggplot(graphdata, aes(Time + 0.1, linetype = Neighborhood, color = Algorithm)) +
   xlim(0,750) +
   xlab("Runtime in msec") +
   ylab("Empirical Cumulative \n Distribution Function") +
-  theme_bw(base_size = 12, base_family="serif") + 
+  theme_bw(base_size = 10, base_family="serif") + 
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         panel.border = element_blank(),
         axis.line = element_line(size=.7, color = "black"),
-        legend.position = c(.85,.4),
+        legend.position = c(.85,.42),
         legend.box = "vertical",
         legend.box.just = "left",
         legend.title = element_text(face = "plain"),
@@ -144,10 +148,10 @@ names(graphdata_small)[names(graphdata_small) == "AlphaValue"] <- "Construction 
 
 png("Runtime_vs_Construction_Method.png",
     width = 16,
-    height = 7,
+    height = 5.5,
     units = "cm",
     res = 1200,
-    pointsize = 12,
+    pointsize = 10,
     family = "serif",
     antialias = "cleartype"
 )
@@ -155,20 +159,22 @@ png("Runtime_vs_Construction_Method.png",
 ggplot(graphdata_small, aes(Time + 0.1, linetype = `Construction heuristic`, color = `Construction heuristic`)) +
   stat_ecdf(geom='line') +
   scale_color_grey(start=0.8, end=0) +
-  geom_hline(yintercept = 1) +
   xlim(0,750) +
   xlab("Runtime in msec") +
   ylab("Empirical Cumulative \n Distribution Function") +
-  theme_bw(base_size = 12, base_family="serif") + 
+  theme_bw(base_size = 10, base_family="serif") + 
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         panel.border = element_blank(),
         axis.line = element_line(size=.7, color = "black"),
-        legend.position = c(.85,0.5),
+        legend.position = c(.80,0.5),
         legend.box = "vertical",
         legend.box.just = "left",
         legend.title = element_text(face = "plain"),
-        legend.key = element_rect(color = "white")
-  )
+        legend.key = element_rect(color = "white"),
+        legend.margin = unit(0, "cm")
+  ) +
+  guides(col = guide_legend(ncol = 2)) +
+  geom_hline(yintercept = 1)
 
 dev.off()
